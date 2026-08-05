@@ -23,6 +23,7 @@ export const userController = {
     return {
       id: existingUser.id,
       email: existingUser.email,
+      createdAt: existingUser.created,
     };
   },
 

@@ -1,11 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 export default defineNuxtConfig({
-  modules: ["@nuxt/ui"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "@nuxt/devtools"],
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2026-06-30",
   devtools: { enabled: true },
-  public: {
-    apiBaseUrl: 'http://localhost:3000',
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: "http://localhost:3000",
+    },
   },
 });

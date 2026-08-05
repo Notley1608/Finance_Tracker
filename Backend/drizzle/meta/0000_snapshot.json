@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "801303f0-5f9e-4b33-9882-0087110c0ea8",
+  "id": "13aac49e-0de3-4d7e-9148-4e6c0278f88d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -29,15 +29,7 @@
           "autoincrement": false
         }
       },
-      "indexes": {
-        "categories_name_unique": {
-          "name": "categories_name_unique",
-          "columns": [
-            "name"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "categories_user_id_users_id_fk": {
           "name": "categories_user_id_users_id_fk",

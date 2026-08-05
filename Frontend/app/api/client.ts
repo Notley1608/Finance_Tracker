@@ -1,5 +1,4 @@
-import { useRuntimeConfig } from "#imports";
-import { navigateTo } from "#app";
+import { useRuntimeConfig, navigateTo } from "#imports";
 
 export interface ApiOptions extends Omit<RequestInit, "body"> {
   body?: any;
@@ -8,30 +7,44 @@ export interface ApiOptions extends Omit<RequestInit, "body"> {
 
 export const createApiClient = () => {
   const config = useRuntimeConfig();
+
   const BASE_URL = config.public.apiBaseUrl;
+
+  if (!BASE_URL) {
+    throw new Error("API base URL is missing. Check NUXT_PUBLIC_API_BASE_URL");
+  }
 
   return $fetch.create({
     baseURL: BASE_URL as string,
 
     onRequest({ options }) {
-      if (!options.headers) options.headers = new Headers();
+      if (!options.headers) {
+        options.headers = new Headers();
+      }
+
       const headers = options.headers as Headers;
 
-      const token = localStorage.getItem("auth_token");
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
+      if (import.meta.client) {
+        const token = localStorage.getItem("auth_token");
+
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
       }
+
       headers.set("Content-Type", "application/json");
+
       headers.set("Accept", "application/json");
     },
 
-    onResponseError({ response }) {
+    async onResponseError({ response }) {
       if (response.status === 401) {
-        localStorage.removeItem("auth_token");
-        navigateTo("/login");
+        if (import.meta.client) {
+          localStorage.removeItem("auth_token");
+
+          await navigateTo("/login");
+        }
       }
     },
   });
 };
-
-export const apiClient = createApiClient();

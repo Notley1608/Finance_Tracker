@@ -2,18 +2,11 @@
   <UPageCard>
     <UAuthForm
       :schema="schema"
-      title="Login"
-      description="Enter your credentials to access your account."
+      title="Register"
+      description="Create an account to start tracking your finances."
       :fields="fields"
       @submit="onSubmit"
     />
-
-    <div class="text-sm">
-      Don't have an account?
-      <NuxtLink to="/register" class="text-primary-500 hover:underline">
-        Register here
-      </NuxtLink>
-    </div>
   </UPageCard>
 </template>
 
@@ -32,7 +25,7 @@ definePageMeta({
 const userStore = useUserStore();
 const toast = useToast();
 
-const fields: AuthFormField[] = [
+const fields = <AuthFormField[]>[
   {
     name: "email",
     type: "email",
@@ -48,38 +41,45 @@ const fields: AuthFormField[] = [
     required: true,
   },
   {
-    name: "remember",
-    label: "Remember me",
-    type: "checkbox",
+    name: "confirmPassword",
+    label: "Confirm Password",
+    type: "password",
+    placeholder: "Confirm your password",
+    required: true,
   },
 ];
 
-const schema = z.object({
-  email: z.email("Invalid email"),
-  password: z
-    .string("Password is required")
-    .min(8, "Must be at least 8 characters"),
-});
+const schema = z
+  .object({
+    email: z.email("Invalid email"),
+    password: z
+      .string("Password is required")
+      .min(8, "Must be at least 8 characters"),
+    confirmPassword: z.string("Confirm Password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+  });
 
 type Schema = z.output<typeof schema>;
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
   userStore
-    .login(payload.data)
+    .register(payload.data)
     .then(async (user) => {
       if (user) {
         await navigateTo("/home");
         toast.add({
-          title: "Signed in",
-          description: `Welcome back, ${payload.data.email}`,
+          title: "Account registered",
+          description: `Welcome, ${payload.data.email}`,
           color: "success",
         });
       }
     })
     .catch((error) => {
       toast.add({
-        title: "Login failed",
-        description: error.message || "An error occurred during login.",
+        title: "Registration failed",
+        description: error.message || "An error occurred during registration.",
         color: "error",
       });
     });

@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { User, authPayload, updateUserPayload } from "~/types/users";
-import { usersApi } from "~/api/modules/users";
+import { useUsersApi } from "~/api/modules/users";
 
 export const useUserStore = defineStore("pinia", () => {
+  const usersApi = useUsersApi();
+
   /**
    * Needs to handle:
    * login/logout
@@ -12,7 +14,7 @@ export const useUserStore = defineStore("pinia", () => {
    * loading/error/success states
    */
   const userData = ref<User | null>(null);
-  const token = ref<string | null>(localStorage.getItem("auth_token") || null);
+  const token = ref<string | null>(null);
   const isLoading = ref(false);
   const error = ref(null);
 
@@ -41,7 +43,7 @@ export const useUserStore = defineStore("pinia", () => {
     }
   }
 
-  async function login(payload: authPayload): Promise<void> {
+  async function login(payload: authPayload): Promise<User | null> {
     isLoading.value = true;
     error.value = null;
 
@@ -52,6 +54,7 @@ export const useUserStore = defineStore("pinia", () => {
       }
       setToken(response.token);
       userData.value = response.user || null;
+      return userData.value;
     } catch (err: any) {
       error.value = err.message || "Error logging into account";
       throw err;
@@ -75,7 +78,7 @@ export const useUserStore = defineStore("pinia", () => {
     }
   }
 
-  async function register(payload: authPayload): Promise<void> {
+  async function register(payload: authPayload): Promise<User | null> {
     isLoading.value = true;
     error.value = null;
 
@@ -86,6 +89,7 @@ export const useUserStore = defineStore("pinia", () => {
       }
       setToken(response.token);
       userData.value = response.user || null;
+      return userData.value;
     } catch (err: any) {
       error.value = err.message || "Error registering account";
       throw err;

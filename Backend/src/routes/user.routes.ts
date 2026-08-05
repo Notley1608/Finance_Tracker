@@ -15,24 +15,16 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   )
   .post(
     "/login",
-    async ({ db, body, jwt, cookie: { auth } }) => {
+    async ({ db, body, jwt }) => {
       try {
-        const validUser = await userController.login(db, {
+        const user = await userController.login(db, {
           userEmail: body.email,
           userPassword: body.password,
         });
 
-        const token = await jwt.sign({ sub: validUser.id });
+        const token = await jwt.sign({ sub: user.id });
 
-        auth.set({
-          value: token,
-          httpOnly: true,
-          secure: true,
-          maxAge: 7 * 86400,
-          path: "/",
-          sameSite: "lax",
-        });
-        return validUser;
+        return { token, user };
       } catch (err: any) {
         if (err.message === "INVALID_CREDENTIALS") {
           throw new HttpError(401, "Invalid email or password");
@@ -64,7 +56,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
   .post(
     "/register",
-    async ({ db, body, jwt, cookie: { auth } }) => {
+    async ({ db, body, jwt }) => {
       try {
         const newUser = await userController.registerUser(
           db,
@@ -73,16 +65,8 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         );
 
         const token = await jwt.sign({ sub: newUser.id });
-        auth.set({
-          value: token,
-          httpOnly: true,
-          secure: true,
-          maxAge: 7 * 86400,
-          path: "/",
-          sameSite: "lax",
-        });
 
-        return newUser;
+        return { token, user: newUser };
       } catch (err: any) {
         if (err.message === "EMAIL_ALREADY_TAKEN") {
           throw new HttpError(409, "Email already taken by existing user");

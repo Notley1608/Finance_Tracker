@@ -15,6 +15,7 @@ async function seed() {
     const usersToSeed = [
       { email: "alice@example.com", password: "HashedPw1!" },
       { email: "bob@example.com", password: "HashedPw1!" },
+      { email: "test@example.com", password: "Test123!" }
     ];
 
     for (const user of usersToSeed) {
