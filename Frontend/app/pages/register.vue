@@ -68,7 +68,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     .register(payload.data)
     .then(async (user) => {
       if (user) {
-        await navigateTo("/home");
+        await navigateTo("/dashboard");
         toast.add({
           title: "Account registered",
           description: `Welcome, ${payload.data.email}`,
