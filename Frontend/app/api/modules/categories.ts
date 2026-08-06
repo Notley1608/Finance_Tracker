@@ -1,12 +1,15 @@
 import type { Category } from "~/types/categories";
-import { apiClient } from "../client";
+import { createApiClient } from "~/api/client";
 
-export const categoriesApi = {
-  /**
-   * METHODS:
-   * create
-   * getAllExpenses
-   * getCategory
+export function categoriesApi() {
+  const apiClient = createApiClient();
+
+  return {
+    /**
+     * METHODS:
+     * create
+     * getAllExpenses
+     * getCategory
    * updateCategory
    * deleteCategory
    */
