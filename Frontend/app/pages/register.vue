@@ -30,7 +30,7 @@ const fields = <AuthFormField[]>[
     name: "email",
     type: "email",
     label: "Email",
-    placeholder: "Enter your email",
+    placeholder: "Enter your email - this will be your username until changed",
     required: true,
   },
   {

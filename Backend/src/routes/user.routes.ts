@@ -121,6 +121,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     async ({ db, userId, body }) => {
       return userController.updateProfile(db, userId, body.currentPassword, {
         updatedEmail: body.newEmail,
+        updatedName: body.newName,
         updatedPassword: body.newPassword,
       });
     },
@@ -128,6 +129,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       body: t.Object({
         currentPassword: t.String({ minLength: 8 }),
         newEmail: t.Optional(t.String({ format: "email" })),
+        newName: t.Optional(t.String({ minLength: 1 })),
         newPassword: t.Optional(
           t.String({
             minLength: 8,

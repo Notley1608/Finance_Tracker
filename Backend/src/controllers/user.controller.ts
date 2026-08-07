@@ -23,7 +23,9 @@ export const userController = {
     return {
       id: existingUser.id,
       email: existingUser.email,
+      name: existingUser.name,
       createdAt: existingUser.created,
+      updatedAt: existingUser.updated,
     };
   },
 
@@ -63,6 +65,7 @@ export const userController = {
     userId: string,
     userPassword: string,
     body: {
+      updatedName: string | undefined;
       updatedEmail: string | undefined;
       updatedPassword: string | undefined;
     },
@@ -83,6 +86,7 @@ export const userController = {
       const updatedUser = await userModel.update(
         userId,
         body.updatedEmail,
+        body.updatedName,
         body.updatedPassword,
       );
       if (!updatedUser) {

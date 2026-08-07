@@ -3,8 +3,10 @@ import { sqliteTable, text, real } from "drizzle-orm/sqlite-core";
 export const userSchema = sqliteTable("users", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
+  name: text("name").notNull(),
   passwordHash: text("password_hash").notNull(),
   createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
 });
 
 export type UserSchema = typeof userSchema.$inferSelect;

@@ -25,8 +25,10 @@ export class UserModel {
     return new UserEntity({
       userId: dbRecord.id,
       userEmail: dbRecord.email,
+      userName: dbRecord.name,
       passwordHash: dbRecord.passwordHash,
       createdAt: dbRecord.createdAt,
+      updatedAt: dbRecord.updatedAt,
     });
   }
   public async findByEmail(userEmail: string): Promise<UserEntity | null> {
@@ -57,8 +59,10 @@ export class UserModel {
         .values({
           id: crypto.randomUUID(),
           email: userEmail,
+          name: userEmail.split("@")[0] as string,
           passwordHash: await Bun.password.hash(userPassword),
           createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         })
         .returning();
 
@@ -67,8 +71,10 @@ export class UserModel {
       return new UserEntity({
         userId: newUser.id,
         userEmail: newUser.email,
+        userName: newUser.name,
         passwordHash: newUser.passwordHash,
         createdAt: newUser.createdAt,
+        updatedAt: newUser.updatedAt,
       });
     } catch (error) {
       console.error("DB insertion failed: ", error);
@@ -79,6 +85,7 @@ export class UserModel {
   public async update(
     userId: string,
     userEmail?: string,
+    userName?: string,
     userPassword?: string,
   ): Promise<UserEntity | null> {
     const [existingUser] = await this.database
@@ -96,6 +103,10 @@ export class UserModel {
       updateFields.email = userEmail;
     }
 
+    if (userName !== undefined) {
+      updateFields.name = userName;
+    }
+
     if (userPassword !== undefined) {
       updateFields.passwordHash = await Bun.password.hash(userPassword);
     }
@@ -103,6 +114,8 @@ export class UserModel {
     if (Object.keys(updateFields).length === 0) {
       return UserModel.fromDatabase(existingUser);
     }
+
+    updateFields.updatedAt = new Date().toISOString();
 
     try {
       const [updatedRecord] = await this.database

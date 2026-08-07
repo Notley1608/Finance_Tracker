@@ -1,9 +1,10 @@
 export interface User {
   id: string;
   email: string;
+  name: string;
   createdAt: string;
+  updatedAt: string;
 }
-
 export interface authPayload {
   email: string;
   password: string;
@@ -20,6 +21,8 @@ export interface AuthResponse {
   user: {
     id: string;
     email: string;
+    name: string;
     createdAt: string;
+    updatedAt: string;
   };
 }

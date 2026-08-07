@@ -28,3 +28,6 @@ logs
 
 # pnpm
 .pnpm-store
+
+# local db date
+database.sqlite.db

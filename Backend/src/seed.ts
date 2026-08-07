@@ -11,64 +11,67 @@ async function seed() {
   try {
     console.log("Seeding database...");
 
-    // 1. Seed Users
+    // 1. Seed Users and capture their IDs
     const usersToSeed = [
       { email: "alice@example.com", password: "HashedPw1!" },
       { email: "bob@example.com", password: "HashedPw1!" },
       { email: "test@example.com", password: "Test123!" }
     ];
 
+    const createdUsers = [];
     for (const user of usersToSeed) {
-      // Check if user already exists (optional)
-      // Here you might want to implement a findByEmail method in your UserModel
-      await userModel.create(user.email, user.password);
-      console.log(`Inserted user: ${user.email} with password ${user.password}`);
+      const createdUser = await userModel.create(user.email, user.password);
+      if (createdUser) {
+        createdUsers.push(createdUser);
+        console.log(`Inserted user: ${user.email}`);
+      }
     }
 
-    // 2. Seed Categories per user
+    // 2. Seed Categories per user using real user IDs
     const categoriesToSeed = [
-      { userId: "uuid-user-1", name: "Groceries" },
-      { userId: "uuid-user-1", name: "Utilities" },
-      { userId: "uuid-user-2", name: "Travel" },
+      { userIndex: 0, name: "Groceries" },
+      { userIndex: 0, name: "Utilities" },
+      { userIndex: 1, name: "Travel" },
     ];
 
+    const createdCategories = [];
     for (const cat of categoriesToSeed) {
-      await categoryModel.create(cat.name, cat.userId);
-      console.log(`Inserted category '${cat.name}' for user ${cat.userId}`);
+      const user = createdUsers[cat.userIndex];
+      if (user) {
+        const createdCat = await categoryModel.create(cat.name, user.id);
+        if (createdCat) {
+          createdCategories.push(createdCat);
+          console.log(`Inserted category '${cat.name}' for user ${user.email}`);
+        }
+      }
     }
 
-    // 3. Seed Expenses per user/category
-    // For this you ideally retrieve the category IDs after insert
-    // But for simplicity, assume you know the IDs or generate UUIDs here
-
+    // 3. Seed Expenses using real user and category IDs
     const expensesToSeed = [
       {
-        expenseId: "uuid-expense-1",
-        userId: "uuid-user-1",
-        categoryId: "category-id-for-groceries", // replace with real ids if you can retrieve them
-        amount: 2500, // e.g. cents
+        categoryIndex: 0,
+        amount: 2500,
         description: "Supermarket",
-        date: new Date().toISOString(),
       },
       {
-        expenseId: "uuid-expense-2",
-        userId: "uuid-user-2",
-        categoryId: "category-id-for-travel",
+        categoryIndex: 2,
         amount: 50000,
         description: "Air ticket",
-        date: new Date().toISOString(),
       },
     ];
 
     for (const expense of expensesToSeed) {
-      await expenseModel.create(
-        expense.amount,
-        expense.userId,
-        expense.categoryId,
-        expense.description,
-        expense.date,
-      );
-      console.log(`Inserted expense for user ${expense.userId} in category ${expense.categoryId}`);
+      const cat = createdCategories[expense.categoryIndex];
+      if (cat) {
+        await expenseModel.create(
+          expense.amount,
+          cat.user_id,
+          cat.id,
+          expense.description,
+          new Date().toISOString(),
+        );
+        console.log(`Inserted expense: ${expense.description}`);
+      }
     }
 
     console.log("Seeding finished successfully!");
