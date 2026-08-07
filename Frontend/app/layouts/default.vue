@@ -20,8 +20,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useUserStore } from "../stores/user";
-import { navigateTo, useRoute } from "#app";
+import { useRoute } from "#app";
 import { formatTitle } from "~/utils";
 import AppMain from "~/components/layout/AppMain.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
@@ -38,12 +37,6 @@ const pageTitle = computed(() => {
 
   return "Finance Tracker";
 });
-
-const userStore = useUserStore();
-if (!userStore.isAuthenticated) {
-  console.log("are we here?");
-  await navigateTo("/login");
-}
 
 const isSidebarOpen = ref(false);
 </script>

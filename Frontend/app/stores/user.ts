@@ -22,7 +22,7 @@ export const useUserStore = defineStore("pinia", () => {
 
   function setToken(newToken: string | null) {
     token.value = newToken;
-    if (import.meta.env.client) {
+    if (typeof localStorage !== "undefined") {
       if (newToken) localStorage.setItem("auth_token", newToken);
       else localStorage.removeItem("auth_token");
     }
@@ -35,11 +35,17 @@ export const useUserStore = defineStore("pinia", () => {
   }
 
   async function initialiseAuth() {
-    if (import.meta.env.client) {
-      const savedToken = localStorage.getItem("authToken");
-      if (savedToken) {
-        setToken(savedToken);
-      }
+    const savedToken = localStorage.getItem("auth_token");
+
+    if (!savedToken) return;
+
+    setToken(savedToken);
+
+    try {
+      const user = await usersApi.getUser(userData.value!.id);
+      userData.value = user;
+    } catch {
+      resetState();
     }
   }
 
