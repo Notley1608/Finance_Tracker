@@ -1,3 +1,7 @@
-<template>
-    <h1>Expenses</h1>
-</template>
+<template></template>
+
+<script setup lang="ts">
+definePageMeta({
+  title: "Expenses",
+});
+</script>

@@ -1,5 +1,5 @@
 <template>
   <UMain class="flex-auto">
-    <slot />
+    <NuxtPage />
   </UMain>
 </template>

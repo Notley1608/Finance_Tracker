@@ -1,6 +1,7 @@
-<template>
-  <h1>Dashboard</h1>
-</template>
+<template></template>
 
 <script setup lang="ts">
+definePageMeta({
+  title: "Dashboard",
+});
 </script>

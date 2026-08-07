@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@pinia/nuxt", "@nuxt/devtools"],
 
+  imports: {
+    autoImport: true,
+  },
+
   css: ["~/assets/css/main.css"],
 
   compatibilityDate: "2026-06-30",
