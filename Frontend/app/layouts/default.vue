@@ -1,13 +1,28 @@
 <template>
   <div class="app-shell min-vh-100 flex flex-column">
-    <header class="bb b--black-10 pa3 flex items-center justify-between">
-      <NuxtLink to="/home" class="link dim near-black f4 b">
-        Finance Tracker
-      </NuxtLink>
-    </header>
+    <AppHeader @toggle-sidebar="isSidebarOpen = !isSidebarOpen" />
 
-    <UMain class="flex-auto">
-      <slot />
-    </UMain>
+    <AppMain />
+
+    <AppSidebar v-model:open="isSidebarOpen" />
+
+    <AppFooter />
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { useUserStore } from "../stores/user";
+import { navigateTo } from "#app";
+import AppMain from "~/components/layout/AppMain.vue";
+import AppHeader from "~/components/layout/AppHeader.vue";
+import AppFooter from "~/components/layout/AppFooter.vue";
+import AppSidebar from "~/components/layout/AppSidebar.vue";
+
+const userStore = useUserStore();
+if (!userStore.isAuthenticated) {
+  await navigateTo("/login");
+}
+
+const isSidebarOpen = ref(false);
+</script>
