@@ -1,10 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type {
-  User,
-  authPayload,
-  updateUserPayload,
-} from "~/types/users";
+import type { User, authPayload, updateUserPayload } from "~/types/users";
 import { useUsersApi } from "~/api/modules/users";
 
 export const useUserStore = defineStore(

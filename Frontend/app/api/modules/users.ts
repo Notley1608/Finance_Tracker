@@ -52,7 +52,10 @@ export function useUsersApi() {
     /**
      * Update user
      */
-    updateUser(userId: string, payload: updateUserPayload): Promise<User> {
+    updateUser(
+      userId: string,
+      payload: updateUserPayload,
+    ): Promise<User> {
       return apiClient<User>(`/users/${userId}`, {
         method: "PATCH",
         body: payload,

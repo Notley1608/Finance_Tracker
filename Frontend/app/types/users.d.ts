@@ -11,7 +11,7 @@ export interface authPayload {
 }
 
 export interface updateUserPayload {
-  currentPassword: string;
+  currentPassword: string | undefined;
   newName: string | undefined;
   newEmail: string | undefined;
   newPassword: string | undefined;
