@@ -16,16 +16,18 @@
     </div>
     <AppFooter />
   </div>
+  <ProfileModal ref="profileModal" />
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import { useRoute } from "#app";
 import { formatTitle } from "~/utils";
 import AppMain from "~/components/layout/AppMain.vue";
 import AppHeader from "~/components/layout/AppHeader.vue";
 import AppFooter from "~/components/layout/AppFooter.vue";
 import AppSidebar from "~/components/layout/AppSidebar.vue";
+import ProfileModal from "~/components/modals/ProfileModal.vue";
 
 const route = useRoute();
 const pageTitle = computed(() => {
@@ -37,6 +39,9 @@ const pageTitle = computed(() => {
 
   return "Finance Tracker";
 });
+
+const profileModal = ref<InstanceType<typeof ProfileModal> | null>(null);
+provide("profileModal", profileModal);
 
 const isSidebarOpen = ref(false);
 </script>

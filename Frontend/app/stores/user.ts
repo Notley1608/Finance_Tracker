@@ -51,7 +51,6 @@ export const useUserStore = defineStore(
         }
         setToken(response.token);
         userData.value = response.user || null;
-        console.log(userData.value);
         return userData.value;
       } catch (err: any) {
         error.value = err.message || "Error logging into account";
@@ -146,7 +145,7 @@ export const useUserStore = defineStore(
       try {
         await usersApi.deleteUser(userId, payload);
       } catch (err: any) {
-        error.value = err.message || "Error logging out";
+        error.value = err.message || "Error deleting user";
         throw err;
       } finally {
         resetState();
@@ -170,7 +169,7 @@ export const useUserStore = defineStore(
   },
   {
     persist: {
-      paths: ["userData", "token"],
+      paths: ["userData"],
     },
   } as any,
 );
