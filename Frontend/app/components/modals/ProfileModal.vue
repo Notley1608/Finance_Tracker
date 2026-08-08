@@ -44,15 +44,57 @@
 
         <!-- Security -->
         <section class="bt b--black-10 pt5 mb5">
-          <h3 class="f4 fw6 ma0 mb3">Security</h3>
-
-          <UButton
-            icon="arrow-right-circle"
-            variant="soft"
-            @click="changePassword"
+          <UForm
+            :state="passwordForm"
+            @submit="changePassword"
+            class="space-y-4"
           >
-            Change password
-          </UButton>
+            <UFormField label="Password">
+              <div v-if="!showPasswordForm" class="flex items-center gap-3">
+                <UButton
+                  variant="ghost"
+                  size="sm"
+                  @click="showPasswordForm = true"
+                >
+                  Change password
+                </UButton>
+              </div>
+
+              <div v-else class="space-y-4">
+                <UFormField label="Current password">
+                  <UInput
+                    v-model="passwordForm.currentPassword"
+                    type="password"
+                    autocomplete="current-password"
+                  />
+                </UFormField>
+
+                <UFormField label="New password">
+                  <UInput
+                    v-model="passwordForm.newPassword"
+                    type="password"
+                    autocomplete="new-password"
+                  />
+                </UFormField>
+
+                <UFormField label="Confirm new password">
+                  <UInput
+                    v-model="passwordForm.confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                  />
+                </UFormField>
+
+                <div class="flex gap-2">
+                  <UButton type="submit"> Update password </UButton>
+
+                  <UButton variant="outline" @click="showPasswordForm = false">
+                    Cancel
+                  </UButton>
+                </div>
+              </div>
+            </UFormField>
+          </UForm>
         </section>
 
         <!-- Danger Zone -->
@@ -83,6 +125,7 @@ const userStore = useUserStore();
 const userData = computed(() => userStore.userData);
 const profile = computed(() => userData.value);
 const isEditing = ref(false);
+const showPasswordForm = ref(false);
 
 const isOpen = ref(false);
 const open = () => {
@@ -100,8 +143,12 @@ defineExpose({
 const state = reactive({
   name: profile.value?.name ?? "",
   email: profile.value?.email ?? "",
+});
+
+const passwordForm = reactive({
   currentPassword: "",
   newPassword: "",
+  confirmPassword: "",
 });
 
 const schema = z.object({
@@ -126,23 +173,24 @@ const saveProfile = async () => {
 
 const changePassword = async () => {
   if (!userData.value?.id) throw new Error("User not found");
+  if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+    throw new Error("Passwords do not match");
+  }
 
   const payload: updateUserPayload = {
     newName: undefined,
     newEmail: undefined,
-    currentPassword: state.currentPassword?.trim() || undefined,
-    newPassword: state.newPassword?.trim() || undefined,
+    currentPassword: passwordForm.currentPassword?.trim(),
+    newPassword: passwordForm.newPassword?.trim(),
   };
 
   await userStore.updateUser(userData.value.id, payload);
-  isEditing.value = false;
+  showPasswordForm.value = false;
 };
 
 const resetState = () => {
   state.name = profile.value?.name ?? "";
   state.email = profile.value?.email ?? "";
-  state.currentPassword = "";
-  state.newPassword = "";
 };
 
 const cancelEdit = () => {
