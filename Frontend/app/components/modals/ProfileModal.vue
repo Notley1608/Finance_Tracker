@@ -15,6 +15,8 @@
             Manage your profile and account preferences.
           </p>
 
+          <p>{{ profile?.name }}</p>
+          <p>{{ profile?.email }}</p>
           <!-- Your general settings go here -->
         </section>
 
@@ -49,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 import { useUserStore } from "~/stores/user";
 import type { updateUserPayload, User } from "~/types/users";
 

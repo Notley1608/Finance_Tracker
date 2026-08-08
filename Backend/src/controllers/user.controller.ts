@@ -63,7 +63,7 @@ export const userController = {
   async updateProfile(
     databaseConnection: typeof db,
     userId: string,
-    userPassword: string,
+    userPassword: string | undefined,
     body: {
       updatedName: string | undefined;
       updatedEmail: string | undefined;
@@ -76,10 +76,16 @@ export const userController = {
       throw new Error("User not found");
     }
 
-    const verifyPassword = await existingUser.verifyPassword(userPassword);
+    if (body.updatedPassword) {
+      if (!userPassword) {
+        throw new Error("Current password is required");
+      }
 
-    if (!verifyPassword) {
-      throw new Error("Invalid password");
+      const verifyPassword = await existingUser.verifyPassword(userPassword);
+
+      if (!verifyPassword) {
+        throw new Error("Invalid password");
+      }
     }
 
     try {
