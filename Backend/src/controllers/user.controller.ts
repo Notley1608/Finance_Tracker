@@ -110,7 +110,6 @@ export const userController = {
     databaseConnection: typeof db,
     userId: string,
     userEmail: string,
-    userPassword: string,
   ) {
     const userModel = new UserModel(databaseConnection);
     const existingUser = await userModel.findById(userId);
@@ -122,7 +121,6 @@ export const userController = {
       const deletedUser = await userModel.delete(
         userId,
         userEmail,
-        userPassword,
       );
       if (!deletedUser) {
         throw new Error("Error deleting user");

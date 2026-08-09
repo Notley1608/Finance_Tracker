@@ -50,7 +50,7 @@
             class="space-y-4"
           >
             <UFormField label="Password">
-              <div v-if="!showPasswordForm" class="flex items-center gap-3">
+              <div v-if="!showPasswordForm" class="flex items-center">
                 <UButton
                   variant="ghost"
                   size="sm"
@@ -102,7 +102,9 @@
           <h3 class="f4 fw6 ma0 mb3">Danger Zone</h3>
 
           <div class="flex flex-column gap-3">
-            <UButton icon="trash" variant="soft"> Delete account </UButton>
+            <UButton icon="trash" variant="soft" @click="deleteUser">
+              Delete account
+            </UButton>
 
             <UButton icon="arrow-down-on-square-stack" variant="soft">
               Export data
@@ -119,7 +121,8 @@ import { computed, onMounted, ref, reactive } from "vue";
 import * as z from "zod";
 import { useUserStore } from "~/stores/user";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
-import type { updateUserPayload, User } from "~/types/users";
+import type { updateUserPayload } from "~/types/users";
+import { navigateTo } from "#app";
 
 const userStore = useUserStore();
 const userData = computed(() => userStore.userData);
@@ -196,6 +199,24 @@ const resetState = () => {
 const cancelEdit = () => {
   resetState();
   isEditing.value = false;
+};
+
+const deleteUser = async () => {
+  if (!userData.value?.id) throw new Error("User not found");
+
+  const confirmed = window.confirm(
+    "Are you sure you want to delete your account? This cannot be undone.",
+  );
+  if (!confirmed) return;
+
+  try {
+    await userStore.deleteUser(userData.value.id, profile.value?.email ?? "");
+  } catch (err) {
+    console.error("Error deleting user with : ", err);
+  } finally {
+    close();
+    await navigateTo("/login");
+  }
 };
 
 onMounted(async () => {

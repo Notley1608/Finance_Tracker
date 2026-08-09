@@ -131,15 +131,13 @@ export const useUserStore = defineStore(
       }
     }
 
-    async function deleteUser(
-      userId: string,
-      payload: authPayload,
-    ): Promise<void> {
+    async function deleteUser(userId: string, email: string): Promise<boolean> {
       isLoading.value = true;
       error.value = null;
 
       try {
-        await usersApi.deleteUser(userId, payload);
+        const response = await usersApi.deleteUser(userId, email);
+        return response.success;
       } catch (err: any) {
         error.value = err.message || "Error deleting user";
         throw err;

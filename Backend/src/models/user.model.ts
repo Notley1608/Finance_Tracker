@@ -136,19 +136,12 @@ export class UserModel {
   public async delete(
     userId: string,
     userEmail: string,
-    userPassword: string,
   ): Promise<boolean | null> {
     try {
       const existingUser = await this.database
         .select()
         .from(userSchema)
-        .where(
-          and(
-            eq(userSchema.id, userId),
-            eq(userSchema.email, userEmail),
-            eq(userSchema.passwordHash, userPassword),
-          ),
-        );
+        .where(and(eq(userSchema.id, userId), eq(userSchema.email, userEmail)));
       if (!existingUser) {
         console.error("Could not find user");
         return null;

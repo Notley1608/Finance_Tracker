@@ -152,7 +152,6 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         db,
         userId,
         body.userEmail,
-        body.userPassword,
       );
       if (!deletedUser) {
         throw new HttpError(404, "User not found");
@@ -164,7 +163,6 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     {
       body: t.Object({
         userEmail: t.String({ format: "email" }),
-        userPassword: t.String({ minLength: 8 }),
       }),
     },
   )

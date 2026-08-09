@@ -52,10 +52,7 @@ export function useUsersApi() {
     /**
      * Update user
      */
-    updateUser(
-      userId: string,
-      payload: updateUserPayload,
-    ): Promise<User> {
+    updateUser(userId: string, payload: updateUserPayload): Promise<User> {
       return apiClient<User>(`/users/${userId}`, {
         method: "PATCH",
         body: payload,
@@ -65,13 +62,10 @@ export function useUsersApi() {
     /**
      * Delete user
      */
-    deleteUser(
-      userId: string,
-      payload: authPayload,
-    ): Promise<{ success: boolean }> {
+    deleteUser(userId: string, email: string): Promise<{ success: boolean }> {
       return apiClient<{ success: boolean }>(`/users/${userId}`, {
         method: "DELETE",
-        body: payload,
+        body: { userEmail: email },
       });
     },
   };
