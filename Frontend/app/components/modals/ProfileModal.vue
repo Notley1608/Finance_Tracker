@@ -125,6 +125,8 @@ import type { updateUserPayload } from "~/types/users";
 import { navigateTo } from "#app";
 
 const userStore = useUserStore();
+const toast = useToast();
+
 const userData = computed(() => userStore.userData);
 const profile = computed(() => userData.value);
 const isEditing = ref(false);
@@ -169,9 +171,23 @@ const saveProfile = async () => {
     currentPassword: undefined,
     newPassword: undefined,
   };
-
-  await userStore.updateUser(userData.value.id, payload);
-  isEditing.value = false;
+  try {
+    await userStore.updateUser(userData.value.id, payload);
+    isEditing.value = false;
+  } catch (err) {
+    console.error("Error updating user: ", err);
+    toast.add({
+      title: "Error",
+      description: "Error updating user",
+      color: "error",
+    });
+  } finally {
+    toast.add({
+      title: "Profile saved",
+      description: "Profile successfully updated",
+      color: "success",
+    });
+  }
 };
 
 const changePassword = async () => {
@@ -187,8 +203,23 @@ const changePassword = async () => {
     newPassword: passwordForm.newPassword?.trim(),
   };
 
-  await userStore.updateUser(userData.value.id, payload);
-  showPasswordForm.value = false;
+  try {
+    await userStore.updateUser(userData.value.id, payload);
+    showPasswordForm.value = false;
+  } catch (err) {
+    console.error("Error updating password: ", err);
+    toast.add({
+      title: "Error",
+      description: "Error updating password",
+      color: "error",
+    });
+  } finally {
+    toast.add({
+      title: "Password changed",
+      description: "Password successfully updated",
+      color: "success",
+    });
+  }
 };
 
 const resetState = () => {
@@ -213,8 +244,18 @@ const deleteUser = async () => {
     await userStore.deleteUser(userData.value.id, profile.value?.email ?? "");
   } catch (err) {
     console.error("Error deleting user with : ", err);
+    toast.add({
+      title: "Error",
+      description: "Error deleting account",
+      color: "error",
+    });
   } finally {
     close();
+    toast.add({
+      title: "User deleted",
+      description: "Successfully deleted account",
+      color: "success",
+    });
     await navigateTo("/login");
   }
 };
