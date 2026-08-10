@@ -1,7 +1,7 @@
 import type { Expense, ExpensePayload } from "~/types/expenses";
 import { createApiClient } from "~/api/client";
 
-export function expensesApi() {
+export function useExpensesApi() {
   const apiClient = createApiClient();
 
   return {
@@ -14,6 +14,7 @@ export function expensesApi() {
      * getExpense
      * updateExpense
      * deleteExpense
+     * exportData
      */
     createExpense(payload: ExpensePayload): Promise<Expense> {
       return apiClient<Expense>("/expenses", {
@@ -52,10 +53,22 @@ export function expensesApi() {
         body: payload,
       });
     },
-    deleteExpense(expenseId: string): Promise<Expense> {
-      return apiClient<Expense>(`/expenses/${expenseId}`, {
+    deleteExpense(expenseId: string): Promise<{ success: boolean }> {
+      return apiClient<{ success: boolean }>(`/expenses/${expenseId}`, {
         method: "DELETE",
       });
+    },
+    exportData(
+      year: number,
+      month: number,
+      format: string,
+    ): Promise<Blob | Expense[]> {
+      return apiClient<Blob | Expense[]>(
+        `/expenses/export?year=${year}&month=${month}&format=${format}`,
+        {
+          method: "GET",
+        },
+      );
     },
   };
 }
