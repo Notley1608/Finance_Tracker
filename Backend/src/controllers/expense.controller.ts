@@ -198,4 +198,80 @@ export const expenseController = {
       throw new Error(message);
     }
   },
+
+  async exportData(
+    databaseConnection: typeof db,
+    year: number,
+    month: number,
+    format: string,
+    userId: string,
+  ) {
+    const expenseModel = new ExpenseModel(databaseConnection);
+
+    try {
+      const fullData = await expenseModel.findSheetByMonth(year, month, userId);
+
+      if (format === "json") {
+        const jsonRows = fullData.map((expense) => ({
+          id: expense.id,
+          user_id: expense.userIdValue,
+          category_id: expense.categoryIdValue,
+          amount: Number(expense.rawAmount) / 100,
+          description: expense.currentDescription,
+          date: expense.currentDate.toISOString().slice(0, 10),
+        }));
+
+        return {
+          data: JSON.stringify(jsonRows, null, 2),
+          contentType: "application/json",
+          extension: "json",
+        };
+      }
+
+      if (format === "csv") {
+        const headers = [
+          "id",
+          "user_id",
+          "category_id",
+          "amount",
+          "description",
+          "date",
+        ];
+
+        const rows = fullData.map((expense) => ({
+          id: expense.id,
+          user_id: expense.userIdValue,
+          category_id: expense.categoryIdValue,
+          amount: Number(expense.rawAmount) / 100,
+          description: expense.currentDescription,
+          date: expense.currentDate.toISOString().slice(0, 10),
+        }));
+
+        const csv = [
+          headers.join(","),
+          ...rows.map((row: Record<string, string | number>) =>
+            headers
+              .map((header) => {
+                const value = row[header] ?? "";
+                const escaped = String(value).replace(/"/g, '""');
+                return `"${escaped}"`;
+              })
+              .join(","),
+          ),
+        ].join("\n");
+
+        return {
+          data: csv,
+          contentType: "text/csv; charset=utf-8",
+          extension: "csv",
+        };
+      }
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unknown error gathering monthly summary";
+      throw new Error(message);
+    }
+  },
 };

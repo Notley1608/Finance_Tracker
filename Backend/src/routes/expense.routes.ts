@@ -68,10 +68,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
 
   .get("/", async ({ db, userId }) => {
     try {
-      const expenses = await expenseController.getExpensesPerUser(
-        db,
-        userId,
-      );
+      const expenses = await expenseController.getExpensesPerUser(db, userId);
       return expenses;
     } catch (err) {
       console.error("Error retrieving expenses for user: ", err);
@@ -125,6 +122,46 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
       query: t.Object({
         year: t.Number(),
         month: t.Number({ minimum: 1, maximum: 12 }),
+      }),
+    },
+  )
+
+  .get(
+    "/export",
+    async ({ db, query, userId, set }) => {
+      const { year, month, format } = query as {
+        year: number;
+        month: number;
+        format: string;
+      };
+
+      try {
+        const result = await expenseController.exportData(
+          db,
+          year,
+          month,
+          format,
+          userId,
+        );
+        if(!result) {
+          throw new Error('No data returned')
+        }
+
+        set.headers["Content-Type"] = result.contentType;
+        set.headers["Content-Disposition"] =
+          `attachment; filename="expenses.${result.extension}"`;
+
+        return result.data;
+      } catch (err) {
+        console.error("Error exporting expense data for user: ", err);
+        throw new HttpError(500, "Internal server error");
+      }
+    },
+    {
+      query: t.Object({
+        year: t.Number(),
+        month: t.Number({ minimum: 1, maximum: 12 }),
+        format: t.String(),
       }),
     },
   )
