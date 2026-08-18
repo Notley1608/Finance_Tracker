@@ -6,22 +6,22 @@
     class="sm:max-w-2xl"
   >
     <template #body>
-      <div class="pa5">
+      <div class="p-5">
         <!-- General -->
-        <section class="mb5">
-          <h3 class="f4 fw6 ma0 mb2">General</h3>
+        <section class="mb-5">
+          <h3 class="text-lg font-semibold m-0 mb-2">General</h3>
 
           <UForm :state="state" :schema="schema" class="space-y-4">
             <UFormField label="Name">
               <UInput v-model="state.name" v-if="isEditing" />
-              <span v-else class="block py-1.5 text-sm text-highlighted">
+              <span v-else class="block py-1.5 text-sm text-slate-700">
                 {{ state.name }}
               </span>
             </UFormField>
 
             <UFormField label="Email">
               <UInput v-model="state.email" v-if="isEditing" />
-              <span v-else class="block py-1.5 text-sm text-highlighted">
+              <span v-else class="block py-1.5 text-sm text-slate-700">
                 {{ state.email }}
               </span>
             </UFormField>
@@ -43,7 +43,7 @@
         </section>
 
         <!-- Security -->
-        <section class="bt b--black-10 pt5 mb5">
+        <section class="border-t border-black/10 pt-5 mb-5">
           <UForm
             :state="passwordForm"
             @submit="changePassword"
@@ -98,10 +98,10 @@
         </section>
 
         <!-- Danger Zone -->
-        <section class="bt b--black-10 pt5">
-          <h3 class="f4 fw6 ma0 mb3">Danger Zone</h3>
+        <section class="border-t border-black/10 pt-5">
+          <h3 class="text-lg font-semibold m-0 mb-3">Danger Zone</h3>
 
-          <div class="flex flex-column gap-3">
+          <div class="flex flex-col gap-3">
             <UButton icon="trash" variant="soft" @click="deleteUser">
               Delete account
             </UButton>

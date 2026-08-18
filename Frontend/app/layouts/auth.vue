@@ -1,6 +1,6 @@
 <template>
-  <div class="auth-layout vh-100 flex flex-column justify-center items-center pa3">
-    <main class="w-100 mw6">
+  <div class="auth-layout h-screen flex flex-col justify-center items-center p-3">
+    <main class="w-full max-w-lg">
       <slot />
     </main>
   </div>

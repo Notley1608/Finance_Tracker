@@ -1,5 +1,5 @@
 <template>
-  <div class="app-shell min-vh-100 flex flex-column">
+  <div class="app-shell min-h-screen flex flex-col">
     <AppHeader
       :page-title="pageTitle"
       :sidebar-open="isSidebarOpen"
