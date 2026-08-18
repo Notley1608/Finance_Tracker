@@ -1,14 +1,14 @@
 import type { Category } from "~/types/categories";
 import { createApiClient } from "~/api/client";
 
-export function categoriesApi() {
+export function useCategoriesApi() {
   const apiClient = createApiClient();
 
   return {
     /**
      * METHODS:
      * create
-     * getAllExpenses
+     * getAllCategories
      * getCategory
      * updateCategory
      * deleteCategory
@@ -19,7 +19,7 @@ export function categoriesApi() {
         body: { categoryName },
       });
     },
-    getAllExpenses(): Promise<Category[]> {
+    getAllCategories(): Promise<Category[]> {
       return apiClient<Category[]>("/categories", {
         method: "GET",
       });
