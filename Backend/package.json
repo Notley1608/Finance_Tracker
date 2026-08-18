@@ -6,8 +6,6 @@
   "devDependencies": {
     "@libsql/client": "^0.17.4",
     "@types/bun": "latest",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2"
   },

@@ -56,8 +56,8 @@ export class ExpenseEntity {
   public toObject() {
     return {
       id: this.expenseId,
-      user_id: this.userId,
-      category_id: this.categoryId,
+      userId: this.userId,
+      categoryId: this.categoryId,
       amount: this.getFormattedAmount(),
       description: this.description,
       date: this.date,

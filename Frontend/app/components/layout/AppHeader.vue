@@ -1,5 +1,5 @@
 <template>
-  <header class="bb b--black-10 pa3 flex items-center">
+  <header class="border-b border-gray-100 p-3 flex items-center">
     <UButton
       icon="i-heroicons-bars-4"
       variant="ghost"
@@ -10,10 +10,10 @@
       class="ml-3 transition-transform duration-300 ease-out"
       :class="props.sidebarOpen ? 'translate-x-64' : 'translate-x-0'"
     >
-      <h1 class="ma0">{{ props.pageTitle }}</h1>
+      <h1 class="m-0">{{ props.pageTitle }}</h1>
     </div>
 
-    <div class="ma3 absolute right-0">
+    <div class="m-3 absolute right-0">
       <UButton
         icon="i-heroicons-cog-6-tooth"
         variant="soft"

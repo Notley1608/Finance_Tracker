@@ -29,7 +29,7 @@ export class CategoryEntity {
     return {
       id: this.categoryId,
       name: this.name,
-      user_id: this.userId,
+      userId: this.userId,
     };
   }
 }
