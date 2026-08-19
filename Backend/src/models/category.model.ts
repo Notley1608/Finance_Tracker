@@ -21,7 +21,7 @@ export class CategoryModel {
 
   public static fromDatabase(dbRecord: CategorySchema): CategoryEntity {
     return new CategoryEntity({
-      categoryId: dbRecord.id,
+      id: dbRecord.id,
       name: dbRecord.name,
       userId: dbRecord.user_id,
     });
@@ -37,7 +37,7 @@ export class CategoryModel {
 
     return records.map((record: CategorySchema) => {
       return new CategoryEntity({
-        categoryId: record.id,
+        id: record.id,
         userId: record.user_id,
         name: record.name,
       });
@@ -88,7 +88,7 @@ export class CategoryModel {
       if (!newCategory) return null;
 
       return new CategoryEntity({
-        categoryId: newCategory.id,
+        id: newCategory.id,
         userId: newCategory.user_id,
         name: newCategory.name,
       });

@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { useExpenseStore } from "~/stores/expense";
 import { useCategoryStore } from "~/stores/category";
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import ExpenseTable from "~/components/expense/ExpenseTable.vue";
 import type { Expense } from "~/types/expenses";
 import type { Category } from "~/types/categories";
@@ -37,9 +37,6 @@ onMounted(async () => {
 
     expenses.value = expenseResult;
     categories.value = categoryResult;
-
-    console.log("expenses", expenses.value);
-    console.log("categories", categories.value);
   } finally {
     isLoading.value = false;
   }

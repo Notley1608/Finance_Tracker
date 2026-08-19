@@ -28,7 +28,6 @@ export const useCategoryStore = defineStore(
 
       try {
         const response = await categoriesApi.getAllCategories();
-        console.log(response)
         categoriesData.value = response || null;
         return categoriesData.value;
       } catch (err: any) {

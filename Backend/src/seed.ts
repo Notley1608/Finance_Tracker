@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { UserModel } from "./models/user.model";        // Your user model
+import { UserModel } from "./models/user.model";
 import { CategoryModel } from "./models/category.model";
 import { ExpenseModel } from "./models/expense.model";
 
@@ -15,13 +15,14 @@ async function seed() {
     const usersToSeed = [
       { email: "alice@example.com", password: "HashedPw1!" },
       { email: "bob@example.com", password: "HashedPw1!" },
-      { email: "test@example.com", password: "Test123!" }
+      { email: "test@example.com", password: "Test123!" },
     ];
 
     const createdUsers = [];
     for (const user of usersToSeed) {
       const existingUser = await userModel.findByEmail(user.email);
-      const createdUser = existingUser ?? (await userModel.create(user.email, user.password));
+      const createdUser =
+        existingUser ?? (await userModel.create(user.email, user.password));
 
       if (createdUser) {
         createdUsers.push(createdUser);
@@ -35,17 +36,25 @@ async function seed() {
 
     // 2. Seed Categories per user using real user IDs
     const categoriesToSeed = [
-      { userIndex: 0, name: "Groceries" },
-      { userIndex: 0, name: "Utilities" },
-      { userIndex: 1, name: "Travel" },
+      { userIndex: 2, categoryName: "Groceries" },
+      { userIndex: 2, categoryName: "Utilities" },
+      { userIndex: 2, categoryName: "Travel" },
     ];
 
-    const createdCategories = new Map<string, { id: string; name: string; userId: string }>();
+    const createdCategories = new Map<
+      string,
+      { id: string; name: string; userId: string }
+    >();
     for (const cat of categoriesToSeed) {
       const user = createdUsers[cat.userIndex];
       if (user) {
-        const existingCategory = await categoryModel.findByName(user.id, cat.name);
-        const createdCat = existingCategory ?? (await categoryModel.create(cat.name, user.id));
+        const existingCategory = await categoryModel.findByName(
+          user.id,
+          cat.categoryName,
+        );
+        const createdCat =
+          existingCategory ??
+          (await categoryModel.create(cat.categoryName, user.id));
 
         if (createdCat) {
           const key = `${user.id}:${createdCat.name}`;
@@ -56,9 +65,13 @@ async function seed() {
           });
 
           if (!existingCategory) {
-            console.log(`Inserted category '${cat.name}' for user ${user.email}`);
+            console.log(
+              `Inserted category '${cat.categoryName}' for user ${user.email}`,
+            );
           } else {
-            console.log(`Using existing category '${cat.name}' for user ${user.email}`);
+            console.log(
+              `Using existing category '${cat.categoryName}' for user ${user.email}`,
+            );
           }
         }
       }
@@ -67,13 +80,13 @@ async function seed() {
     // 3. Seed Expenses using real user and category IDs
     const expensesToSeed = [
       {
-        userEmail: "alice@example.com",
+        userEmail: "test@example.com",
         categoryName: "Groceries",
         amount: 2500,
         description: "Supermarket",
       },
       {
-        userEmail: "bob@example.com",
+        userEmail: "test@example.com",
         categoryName: "Travel",
         amount: 50000,
         description: "Air ticket",
@@ -81,9 +94,13 @@ async function seed() {
     ];
 
     for (const expense of expensesToSeed) {
-      const user = createdUsers.find((item) => item.email === expense.userEmail);
+      const user = createdUsers.find(
+        (item) => item.email === expense.userEmail,
+      );
       if (!user) {
-        console.warn(`Skipping expense '${expense.description}' because user was not found`);
+        console.warn(
+          `Skipping expense '${expense.description}' because user was not found`,
+        );
         continue;
       }
 

@@ -9,7 +9,11 @@
 </template>
 
 <script lang="ts" setup>
+import { watch } from "vue";
+import { useRoute } from "#app";
+
 const open = defineModel<boolean>("open");
+const route = useRoute();
 const items = [
   {
     label: "Dashboard",
@@ -27,4 +31,11 @@ const items = [
     to: "/categories",
   },
 ];
+
+watch(
+  () => route.path,
+  () => {
+    open.value = false;
+  },
+);
 </script>
