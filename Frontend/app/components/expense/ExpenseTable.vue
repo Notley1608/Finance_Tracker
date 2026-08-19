@@ -94,13 +94,12 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import type { Expense } from "~/types/expenses";
-import type { Category } from "~/types/categories";
 import type { TableColumn } from "@nuxt/ui";
 import { formatDate } from "~/utils/index.ts";
 
 const props = defineProps<{
   expenses: Expense[] | null;
-  categories: Category[] | null;
+  categoryMap: Record<string, string>;
   isLoading: boolean;
 }>();
 const emit = defineEmits(["edit", "delete"]);
@@ -109,10 +108,8 @@ const expenseData = computed(
   () =>
     props.expenses?.map((expense) => ({
       ...expense,
-      amount: `$${expense.amount}`,
       category:
-        props.categories?.find((category) => category.id === expense.categoryId)
-          ?.name ?? "Unknown",
+        props.categoryMap[expense.categoryId] ?? "Unknown",
     })) ?? [],
 );
 

@@ -2,7 +2,7 @@ export interface Expense {
   id: string;
   userId: string;
   categoryId: string;
-  amount: number;
+  amount: string;
   description: string;
   date: string;
 }
