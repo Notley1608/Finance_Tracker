@@ -1,6 +1,5 @@
 <template>
   <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-    <!-- Filter -->
     <div
       class="flex items-center justify-between border-b border-default px-4 py-4"
     >
@@ -12,7 +11,6 @@
       />
     </div>
 
-    <!-- Table -->
     <div
       class="overflow-hidden rounded-xl border border-default bg-white shadow-sm dark:bg-gray-900"
     >
@@ -44,9 +42,7 @@
         </template>
 
         <template #date-data="{ row }">
-          <span class="text-sm text-muted">
-            {{ formatDate(row.original.date) }}
-          </span>
+          {{ formatDate(row.original.date) }}
         </template>
 
         <template #actions-cell="{ row }">
@@ -66,7 +62,6 @@
       </UTable>
     </div>
 
-    <!-- Pagination -->
     <div
       class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
     >
@@ -108,8 +103,7 @@ const expenseData = computed(
   () =>
     props.expenses?.map((expense) => ({
       ...expense,
-      category:
-        props.categoryMap[expense.categoryId] ?? "Unknown",
+      category: props.categoryMap[expense.categoryId] ?? "Unknown",
     })) ?? [],
 );
 

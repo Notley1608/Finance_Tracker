@@ -50,7 +50,10 @@ export const expenseController = {
 
     try {
       const expenses = await expenseModel.findAllByUserId(userId);
-      return expenses;
+      if (!expenses) {
+        throw new Error("Could not find expenses for user");
+      }
+      return expenses.map((e) => e.toObject());
     } catch (err: unknown) {
       const message =
         err instanceof Error
@@ -162,7 +165,7 @@ export const expenseController = {
       if (!expensesByMonth || expensesByMonth.length === 0) {
         return [];
       }
-      return expensesByMonth;
+      return expensesByMonth.map((e) => e.toObject());
     } catch (err: unknown) {
       const message =
         err instanceof Error

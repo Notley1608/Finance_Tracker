@@ -36,12 +36,12 @@ onMounted(async () => {
   isLoading.value = true;
 
   try {
-    const [expenseResult] = await Promise.all([
+    await Promise.all([
       expenseStore.getAllExpenses(),
       categoryStore.getAllCategories(),
     ]);
 
-    expenses.value = expenseResult;
+    expenses.value = expenseStore.expensesData;
   } finally {
     isLoading.value = false;
   }

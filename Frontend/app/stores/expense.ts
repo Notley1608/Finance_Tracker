@@ -176,6 +176,7 @@ export const useExpenseStore = defineStore(
     }
 
     return {
+      expensesData,
       expenseData,
       isLoading,
       error,
