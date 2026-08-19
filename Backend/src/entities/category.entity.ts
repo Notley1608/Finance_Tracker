@@ -1,33 +1,23 @@
 export interface CategoryProperties {
-  categoryId: string;
+  id: string;
   userId: string;
   name: string;
 }
 
 export class CategoryEntity {
-  private categoryId: string;
-  private userId: string;
-  private name: string;
+  public id: string;
+  public userId: string;
+  public name: string;
 
   constructor(properties: CategoryProperties) {
-    this.categoryId = properties.categoryId;
+    this.id = properties.id;
     this.userId = properties.userId;
     this.name = properties.name;
   }
 
-  get id() {
-    return this.categoryId;
-  }
-  get categoryName() {
-    return this.name;
-  }
-  get user_id() {
-    return this.userId;
-  }
-
   public toObject() {
     return {
-      id: this.categoryId,
+      id: this.id,
       name: this.name,
       userId: this.userId,
     };

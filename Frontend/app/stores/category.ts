@@ -3,7 +3,7 @@ import { ref } from "vue";
 import type { Category } from "~/types/categories";
 import { useCategoriesApi } from "~/api/modules/categories";
 
-export const useCategoriesStore = defineStore(
+export const useCategoryStore = defineStore(
   "category",
   () => {
     const categoriesApi = useCategoriesApi();
@@ -28,6 +28,7 @@ export const useCategoriesStore = defineStore(
 
       try {
         const response = await categoriesApi.getAllCategories();
+        console.log(response)
         categoriesData.value = response || null;
         return categoriesData.value;
       } catch (err: any) {
@@ -105,6 +106,7 @@ export const useCategoriesStore = defineStore(
         error.value = err?.message || "Failed to delete category";
         throw error;
       } finally {
+        resetState();
         isLoading.value = false;
       }
     }

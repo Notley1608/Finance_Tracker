@@ -143,8 +143,8 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
           format,
           userId,
         );
-        if(!result) {
-          throw new Error('No data returned')
+        if (!result) {
+          throw new Error("No data returned");
         }
 
         set.headers["Content-Type"] = result.contentType;
