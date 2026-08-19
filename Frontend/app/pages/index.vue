@@ -1,4 +1,5 @@
 <script setup lang="ts">
 import { navigateTo } from '#app';
-await navigateTo("/login");
+
+await navigateTo("/dashboard");
 </script>

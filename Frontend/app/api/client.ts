@@ -1,4 +1,5 @@
 import { useRuntimeConfig, navigateTo } from "#imports";
+import { useUserStore } from "~/stores/user";
 
 export interface ApiOptions extends Omit<RequestInit, "body"> {
   body?: any;
@@ -23,13 +24,10 @@ export const createApiClient = () => {
       }
 
       const headers = options.headers as Headers;
+      const userStore = useUserStore();
 
-      if (import.meta.client) {
-        const token = localStorage.getItem("auth_token");
-
-        if (token) {
-          headers.set("Authorization", `Bearer ${token}`);
-        }
+      if (userStore.token) {
+        headers.set("Authorization", `Bearer ${userStore.token}`);
       }
 
       headers.set("Content-Type", "application/json");
@@ -39,11 +37,10 @@ export const createApiClient = () => {
 
     async onResponseError({ response }) {
       if (response.status === 401) {
-        if (import.meta.client) {
-          localStorage.removeItem("auth_token");
+        const userStore = useUserStore();
+        userStore.resetState();
 
-          await navigateTo("/login");
-        }
+        await navigateTo("/login");
       }
     },
   });

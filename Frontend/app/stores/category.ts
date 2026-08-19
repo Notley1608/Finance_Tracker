@@ -124,7 +124,7 @@ export const useCategoryStore = defineStore(
   },
   {
     persist: {
-      paths: ["categoryData"],
+      pick: ["categoryData"],
     },
-  } as any,
+  },
 );

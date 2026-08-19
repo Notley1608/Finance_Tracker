@@ -24,10 +24,6 @@ export const useUserStore = defineStore(
 
     function setToken(newToken: string | null) {
       token.value = newToken;
-      if (typeof localStorage !== "undefined") {
-        if (newToken) localStorage.setItem("auth_token", newToken);
-        else localStorage.removeItem("auth_token");
-      }
     }
 
     function resetState(): void {
@@ -153,6 +149,7 @@ export const useUserStore = defineStore(
       isLoading,
       error,
       isAuthenticated,
+      resetState,
       login,
       logout,
       register,
@@ -163,7 +160,7 @@ export const useUserStore = defineStore(
   },
   {
     persist: {
-      paths: ["userData"],
+      pick: ["userData", "token"],
     },
-  } as any,
+  },
 );

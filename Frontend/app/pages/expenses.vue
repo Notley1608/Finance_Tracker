@@ -16,6 +16,7 @@ import { definePageMeta } from "#imports";
 
 definePageMeta({
   title: "Expenses",
+  middleware: "auth",
 });
 
 const expenseStore = useExpenseStore();

@@ -192,7 +192,7 @@ export const useExpenseStore = defineStore(
   },
   {
     persist: {
-      paths: ["expenseData"],
+      pick: ["expenseData"],
     },
-  } as any,
+  },
 );

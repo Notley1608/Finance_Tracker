@@ -2,6 +2,10 @@
 export default defineNuxtConfig({
   modules: ["@nuxt/ui", "@pinia/nuxt", "@nuxt/devtools"],
 
+  pinia: {
+    plugins: ["~/plugins/pinia-persist.client.ts"],
+  },
+
   imports: {
     autoImport: true,
   },
