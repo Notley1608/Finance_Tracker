@@ -72,16 +72,11 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   .patch(
     "/me",
     async ({ db, userId, body }) => {
-      return userController.updateProfile(
-        db,
-        userId,
-        body.currentPassword as string,
-        {
-          updatedEmail: body.newEmail,
-          updatedName: body.newName,
-          updatedPassword: body.newPassword,
-        },
-      );
+      return userController.updateProfile(db, userId, body.currentPassword, {
+        updatedEmail: body.newEmail,
+        updatedName: body.newName,
+        updatedPassword: body.newPassword,
+      });
     },
     {
       body: t.Object({
