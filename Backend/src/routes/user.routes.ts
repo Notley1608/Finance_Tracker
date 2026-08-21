@@ -26,16 +26,10 @@ export const userRoutes = new Elysia({ prefix: "/users" })
           pattern: `^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$`,
         }),
       }),
-      cookie: t.Cookie({
-        auth: t.Optional(t.String()),
-      }),
     },
   )
 
-  .post("/logout", async ({ cookie, set }) => {
-    if (cookie.auth) cookie.auth.remove();
-    if (cookie.refreshToken) cookie.refreshToken.remove();
-
+  .post("/logout", async ({ set }) => {
     set.status = 200;
     return { success: true, message: "Logged out successfully" };
   })
@@ -60,9 +54,6 @@ export const userRoutes = new Elysia({ prefix: "/users" })
           minLength: 8,
           pattern: `^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$`,
         }),
-      }),
-      cookie: t.Cookie({
-        auth: t.Optional(t.String()),
       }),
     },
   )

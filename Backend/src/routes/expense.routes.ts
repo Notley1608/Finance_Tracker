@@ -160,8 +160,10 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
     "/:expenseId",
     async ({ db, params, userId, set }) => {
       const { expenseId } = params as { expenseId: string };
+      await expenseController.deleteExpense(db, expenseId, userId);
+
       set.status = 204;
-      return !!(await expenseController.deleteExpense(db, expenseId, userId));
+      return { success: true };
     },
     {
       params: t.Object({
