@@ -79,23 +79,18 @@ export class CategoryModel {
     name: string,
     userId: string,
   ): Promise<CategoryEntity | null> {
-    try {
-      const [newCategory] = await this.database
-        .insert(categorySchema)
-        .values({ id: crypto.randomUUID(), user_id: userId, name: name })
-        .returning();
+    const [newCategory] = await this.database
+      .insert(categorySchema)
+      .values({ id: crypto.randomUUID(), user_id: userId, name: name })
+      .returning();
 
-      if (!newCategory) return null;
+    if (!newCategory) return null;
 
-      return new CategoryEntity({
-        id: newCategory.id,
-        userId: newCategory.user_id,
-        name: newCategory.name,
-      });
-    } catch (error) {
-      console.error("DB insertion failed: ", error);
-      return null;
-    }
+    return new CategoryEntity({
+      id: newCategory.id,
+      userId: newCategory.user_id,
+      name: newCategory.name,
+    });
   }
 
   public async update(
@@ -117,39 +112,29 @@ export class CategoryModel {
       return null;
     }
 
-    try {
-      const [updatedRecord] = await this.database
-        .update(categorySchema)
-        .set({ name: categoryName })
-        .where(eq(categorySchema.id, categoryId))
-        .returning();
-      if (!updatedRecord) return null;
+    const [updatedRecord] = await this.database
+      .update(categorySchema)
+      .set({ name: categoryName })
+      .where(eq(categorySchema.id, categoryId))
+      .returning();
+    if (!updatedRecord) return null;
 
-      return CategoryModel.fromDatabase(updatedRecord);
-    } catch (err) {
-      console.error("Error updating category: ", err);
-      return null;
-    }
+    return CategoryModel.fromDatabase(updatedRecord);
   }
 
   public async delete(
     categoryId: string,
     userId: string,
   ): Promise<boolean | null> {
-    try {
-      const deletedCategory = await this.database
-        .delete(categorySchema)
-        .where(
-          and(
-            eq(categorySchema.id, categoryId),
-            eq(categorySchema.user_id, userId),
-          ),
-        )
-        .returning();
-      return !!deletedCategory;
-    } catch (error) {
-      console.error("Error deleting category: ", error);
-      return null;
-    }
+    const deletedCategory = await this.database
+      .delete(categorySchema)
+      .where(
+        and(
+          eq(categorySchema.id, categoryId),
+          eq(categorySchema.user_id, userId),
+        ),
+      )
+      .returning();
+    return !!deletedCategory;
   }
 }

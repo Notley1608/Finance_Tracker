@@ -53,33 +53,28 @@ export class UserModel {
     userEmail: string,
     userPassword: string,
   ): Promise<UserEntity | null> {
-    try {
-      const [newUser] = await this.database
-        .insert(userSchema)
-        .values({
-          id: crypto.randomUUID(),
-          email: userEmail,
-          name: userEmail.split("@")[0] as string,
-          passwordHash: await Bun.password.hash(userPassword),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        })
-        .returning();
+    const [newUser] = await this.database
+      .insert(userSchema)
+      .values({
+        id: crypto.randomUUID(),
+        email: userEmail,
+        name: userEmail.split("@")[0] as string,
+        passwordHash: await Bun.password.hash(userPassword),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
+      .returning();
 
-      if (!newUser) return null;
+    if (!newUser) return null;
 
-      return new UserEntity({
-        userId: newUser.id,
-        userEmail: newUser.email,
-        userName: newUser.name,
-        passwordHash: newUser.passwordHash,
-        createdAt: newUser.createdAt,
-        updatedAt: newUser.updatedAt,
-      });
-    } catch (error) {
-      console.error("DB insertion failed: ", error);
-      return null;
-    }
+    return new UserEntity({
+      userId: newUser.id,
+      userEmail: newUser.email,
+      userName: newUser.name,
+      passwordHash: newUser.passwordHash,
+      createdAt: newUser.createdAt,
+      updatedAt: newUser.updatedAt,
+    });
   }
 
   public async update(
@@ -117,45 +112,35 @@ export class UserModel {
 
     updateFields.updatedAt = new Date().toISOString();
 
-    try {
-      const [updatedRecord] = await this.database
-        .update(userSchema)
-        .set(updateFields)
-        .where(eq(userSchema.id, userId))
-        .returning();
+    const [updatedRecord] = await this.database
+      .update(userSchema)
+      .set(updateFields)
+      .where(eq(userSchema.id, userId))
+      .returning();
 
-      if (!updatedRecord) return null;
+    if (!updatedRecord) return null;
 
-      return UserModel.fromDatabase(updatedRecord);
-    } catch (error) {
-      console.error("Error updating user: ", error);
-      return null;
-    }
+    return UserModel.fromDatabase(updatedRecord);
   }
 
   public async delete(
     userId: string,
     userEmail: string,
   ): Promise<boolean | null> {
-    try {
-      const existingUser = await this.database
-        .select()
-        .from(userSchema)
-        .where(and(eq(userSchema.id, userId), eq(userSchema.email, userEmail)));
-      if (existingUser.length === 0) {
-        console.error("Could not find user");
-        return null;
-      }
-
-      const deletedUser = await this.database
-        .delete(userSchema)
-        .where(and(eq(userSchema.id, userId)))
-        .returning();
-
-      return !!deletedUser;
-    } catch (err) {
-      console.error("Error deleting user: ", err);
+    const existingUser = await this.database
+      .select()
+      .from(userSchema)
+      .where(and(eq(userSchema.id, userId), eq(userSchema.email, userEmail)));
+    if (existingUser.length === 0) {
+      console.error("Could not find user");
       return null;
     }
+
+    const deletedUser = await this.database
+      .delete(userSchema)
+      .where(and(eq(userSchema.id, userId)))
+      .returning();
+
+    return !!deletedUser;
   }
 }

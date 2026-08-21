@@ -36,34 +36,29 @@ export class ExpenseModel {
     description: string,
     date: string,
   ): Promise<ExpenseEntity | null> {
-    try {
-      const [newExpense] = await this.database
-        .insert(expenseSchema)
-        .values({
-          id: crypto.randomUUID(),
-          user_id: activeUserId,
-          category_id: categoryId,
-          amount: amount,
-          description: description,
-          date: date,
-        })
-        .returning();
-      if (!newExpense) {
-        return null;
-      }
-
-      return new ExpenseEntity({
-        expenseId: newExpense.id,
-        userId: newExpense.user_id,
-        categoryId: newExpense.category_id,
-        amount: newExpense.amount,
-        description: newExpense.description ?? "",
-        date: new Date(newExpense.date),
-      });
-    } catch (error) {
-      console.error("DB insertion failed: ", error);
+    const [newExpense] = await this.database
+      .insert(expenseSchema)
+      .values({
+        id: crypto.randomUUID(),
+        user_id: activeUserId,
+        category_id: categoryId,
+        amount: amount,
+        description: description,
+        date: date,
+      })
+      .returning();
+    if (!newExpense) {
       return null;
     }
+
+    return new ExpenseEntity({
+      expenseId: newExpense.id,
+      userId: newExpense.user_id,
+      categoryId: newExpense.category_id,
+      amount: newExpense.amount,
+      description: newExpense.description ?? "",
+      date: new Date(newExpense.date),
+    });
   }
 
   public async findById(
@@ -115,53 +110,40 @@ export class ExpenseModel {
       updateFields.date = date;
     }
 
-    try {
-      const updatedRecords = await this.database
-        .update(expenseSchema)
-        .set(updateFields)
-        .where(eq(expenseSchema.id, expenseId))
-        .returning();
-      if (!updatedRecords || updatedRecords.length === 0) return null;
+    const updatedRecords = await this.database
+      .update(expenseSchema)
+      .set(updateFields)
+      .where(eq(expenseSchema.id, expenseId))
+      .returning();
+    if (!updatedRecords || updatedRecords.length === 0) return null;
 
-      const newRecord = updatedRecords[0];
-      if (!newRecord) {
-        console.error("Could not find or update expense wth ID: ", expenseId);
-        return null;
-      }
-
-      return new ExpenseEntity({
-        expenseId: newRecord.id,
-        userId: newRecord.user_id,
-        categoryId: newRecord.category_id,
-        amount: newRecord.amount,
-        description: newRecord.description ?? "",
-        date: new Date(newRecord.date),
-      });
-    } catch (error) {
-      console.error("Error updating expense: ", error);
+    const newRecord = updatedRecords[0];
+    if (!newRecord) {
+      console.error("Could not find or update expense wth ID: ", expenseId);
       return null;
     }
+
+    return new ExpenseEntity({
+      expenseId: newRecord.id,
+      userId: newRecord.user_id,
+      categoryId: newRecord.category_id,
+      amount: newRecord.amount,
+      description: newRecord.description ?? "",
+      date: new Date(newRecord.date),
+    });
   }
 
   public async delete(
     expenseId: string,
     userId: string,
   ): Promise<boolean | null> {
-    try {
-      const [deletedExpense] = await this.database
-        .delete(expenseSchema)
-        .where(
-          and(
-            eq(expenseSchema.id, expenseId),
-            eq(expenseSchema.user_id, userId),
-          ),
-        )
-        .returning();
-      return !!deletedExpense;
-    } catch (error) {
-      console.log("Error deleting expense: ", error);
-      return null;
-    }
+    const [deletedExpense] = await this.database
+      .delete(expenseSchema)
+      .where(
+        and(eq(expenseSchema.id, expenseId), eq(expenseSchema.user_id, userId)),
+      )
+      .returning();
+    return !!deletedExpense;
   }
 
   public async findAllByUserId(
@@ -194,36 +176,31 @@ export class ExpenseModel {
     const startOfMonth = new Date(year, month - 1, 1).toISOString();
     const startOfNextMonth = new Date(year, month, 1).toISOString();
 
-    try {
-      const records = await this.database
-        .select()
-        .from(expenseSchema)
-        .where(
-          and(
-            eq(expenseSchema.user_id, userId),
-            gte(expenseSchema.date, startOfMonth),
-            lt(expenseSchema.date, startOfNextMonth),
-          ),
-        );
-      if (!records) {
-        console.log("No records found within those bounds");
-        return [];
-      }
-
-      return records.map((record) => {
-        return new ExpenseEntity({
-          expenseId: record.id,
-          userId: record.user_id,
-          categoryId: record.category_id,
-          amount: record.amount,
-          description: record.description ?? "",
-          date: new Date(record.date),
-        });
-      });
-    } catch (error) {
-      console.error("Error finding expenses for that month: ", error);
+    const records = await this.database
+      .select()
+      .from(expenseSchema)
+      .where(
+        and(
+          eq(expenseSchema.user_id, userId),
+          gte(expenseSchema.date, startOfMonth),
+          lt(expenseSchema.date, startOfNextMonth),
+        ),
+      );
+    if (!records) {
+      console.log("No records found within those bounds");
       return [];
     }
+
+    return records.map((record) => {
+      return new ExpenseEntity({
+        expenseId: record.id,
+        userId: record.user_id,
+        categoryId: record.category_id,
+        amount: record.amount,
+        description: record.description ?? "",
+        date: new Date(record.date),
+      });
+    });
   }
 
   public async getMonthlySummary(
@@ -239,59 +216,49 @@ export class ExpenseModel {
     const startOfMonth = new Date(year, month - 1, 1).toISOString();
     const startOfNextMonth = new Date(year, month, 1).toISOString();
 
-    try {
-      const totalResult = await this.database
-        .select({ totalCents: sum(expenseSchema.amount) })
-        .from(expenseSchema)
-        .where(
-          and(
-            eq(expenseSchema.user_id, userId),
-            gte(expenseSchema.date, startOfMonth),
-            lt(expenseSchema.date, startOfNextMonth),
-          ),
-        );
-      const totalAmount = totalResult[0]?.totalCents ?? 0;
-      const totalSpentDollar = Number(totalAmount);
+    const totalResult = await this.database
+      .select({ totalCents: sum(expenseSchema.amount) })
+      .from(expenseSchema)
+      .where(
+        and(
+          eq(expenseSchema.user_id, userId),
+          gte(expenseSchema.date, startOfMonth),
+          lt(expenseSchema.date, startOfNextMonth),
+        ),
+      );
+    const totalAmount = totalResult[0]?.totalCents ?? 0;
+    const totalSpentDollar = Number(totalAmount);
 
-      const categoryResult = await this.database
-        .select({
-          categoryId: expenseSchema.category_id,
-          amountSpent: sum(expenseSchema.amount),
-        })
-        .from(expenseSchema)
-        .where(
-          and(
-            eq(expenseSchema.user_id, userId),
-            gte(expenseSchema.date, startOfMonth),
-            lt(expenseSchema.date, startOfNextMonth),
-          ),
-        )
-        .groupBy(expenseSchema.category_id);
+    const categoryResult = await this.database
+      .select({
+        categoryId: expenseSchema.category_id,
+        amountSpent: sum(expenseSchema.amount),
+      })
+      .from(expenseSchema)
+      .where(
+        and(
+          eq(expenseSchema.user_id, userId),
+          gte(expenseSchema.date, startOfMonth),
+          lt(expenseSchema.date, startOfNextMonth),
+        ),
+      )
+      .groupBy(expenseSchema.category_id);
 
-      const categoriesBreakdown = categoryResult.map((row) => {
-        const rawCategoryAmount = row.amountSpent
-          ? parseInt(row.amountSpent, 10)
-          : 0;
-        return {
-          categoryId: row.categoryId,
-          amountSpent: rawCategoryAmount,
-        };
-      });
-
+    const categoriesBreakdown = categoryResult.map((row) => {
+      const rawCategoryAmount = row.amountSpent
+        ? parseInt(row.amountSpent, 10)
+        : 0;
       return {
-        year,
-        month,
-        totalSpent: totalSpentDollar,
-        categories: categoriesBreakdown,
+        categoryId: row.categoryId,
+        amountSpent: rawCategoryAmount,
       };
-    } catch (error) {
-      console.error("Error calculating summary for that month: ", error);
-      return {
-        year,
-        month,
-        totalSpent: 0,
-        categories: [],
-      };
-    }
+    });
+
+    return {
+      year,
+      month,
+      totalSpent: totalSpentDollar,
+      categories: categoriesBreakdown,
+    };
   }
 }
