@@ -168,7 +168,7 @@ export const expenseController = {
         id: expense.id,
         user_id: expense.userIdValue,
         category_id: expense.categoryIdValue,
-        amount: Number(expense.rawAmount) / 100,
+        amount: Number(expense.rawAmount),
         description: expense.currentDescription,
         date: expense.currentDate.toISOString().slice(0, 10),
       }));
@@ -194,7 +194,7 @@ export const expenseController = {
         id: expense.id,
         user_id: expense.userIdValue,
         category_id: expense.categoryIdValue,
-        amount: Number(expense.rawAmount) / 100,
+        amount: Number(expense.rawAmount),
         description: expense.currentDescription,
         date: expense.currentDate.toISOString().slice(0, 10),
       }));

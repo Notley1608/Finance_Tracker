@@ -82,13 +82,13 @@ async function seed() {
       {
         userEmail: "test@example.com",
         categoryName: "Groceries",
-        amount: 2500,
+        amount: 25,
         description: "Supermarket",
       },
       {
         userEmail: "test@example.com",
         categoryName: "Travel",
-        amount: 50000,
+        amount: 500,
         description: "Air ticket",
       },
     ];

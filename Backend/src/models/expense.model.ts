@@ -250,13 +250,13 @@ export class ExpenseModel {
             lt(expenseSchema.date, startOfNextMonth),
           ),
         );
-      const totalCents = totalResult[0]?.totalCents ?? 0;
-      const totalSpentDollar = Number(totalCents) / 100;
+      const totalAmount = totalResult[0]?.totalCents ?? 0;
+      const totalSpentDollar = Number(totalAmount);
 
       const categoryResult = await this.database
         .select({
           categoryId: expenseSchema.category_id,
-          centsSpent: sum(expenseSchema.amount),
+          amountSpent: sum(expenseSchema.amount),
         })
         .from(expenseSchema)
         .where(
@@ -269,12 +269,12 @@ export class ExpenseModel {
         .groupBy(expenseSchema.category_id);
 
       const categoriesBreakdown = categoryResult.map((row) => {
-        const rawCategoryCents = row.centsSpent
-          ? parseInt(row.centsSpent, 10)
+        const rawCategoryAmount = row.amountSpent
+          ? parseInt(row.amountSpent, 10)
           : 0;
         return {
           categoryId: row.categoryId,
-          amountSpent: rawCategoryCents / 100,
+          amountSpent: rawCategoryAmount,
         };
       });
 

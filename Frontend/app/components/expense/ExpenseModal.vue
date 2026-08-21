@@ -113,7 +113,7 @@ const resetState = () => {
 const handleSubmit = () => {
   const payload: ExpensePayload = {
     categoryId: state.categoryId,
-    amount: Math.round(parseFloat(state.amount) * 100),
+    amount: Math.round(parseFloat(state.amount)),
     description: state.description,
     date: state.date,
   };
