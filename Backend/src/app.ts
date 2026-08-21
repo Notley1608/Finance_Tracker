@@ -20,14 +20,14 @@ const app = new Elysia()
   }))
 
   .onError(({ error, set }) => {
-    console.error(error);
     if (error instanceof HttpError) {
       set.status = error.statusCode;
       return { error: error.message };
+    } else {
+      console.error(error);
     }
     set.status = 500;
     return {
-      success: false,
       message: (error as Error).message || "Internal server error",
     };
   });
