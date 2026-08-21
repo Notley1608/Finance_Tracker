@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { ExpenseModel } from "../models/expense.model";
 import { CategoryModel } from "../models/category.model";
+import { HttpError } from "../utils";
 
 interface expenseDetails {
   categoryId: string;
@@ -21,46 +22,30 @@ export const expenseController = {
     const { amount, categoryId, description, date } = expenseDetails;
     const category = await categoryModel.findById(categoryId, userId);
     if (!category) {
-      throw new Error("Invalid category");
+      throw new HttpError(400, "Invalid category");
     }
 
-    try {
-      const newExpense = await expenseModel.create(
-        amount,
-        userId,
-        categoryId,
-        description,
-        date,
-      );
-      if (!newExpense) {
-        return null;
-      }
-      return newExpense.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown expense registration error";
-      throw new Error(message);
+    const newExpense = await expenseModel.create(
+      amount,
+      userId,
+      categoryId,
+      description,
+      date,
+    );
+    if (!newExpense) {
+      throw new HttpError(500, "Error creating expense");
     }
+    return newExpense.toObject();
   },
 
   async getExpensesPerUser(databaseConnection: typeof db, userId: string) {
     const expenseModel = new ExpenseModel(databaseConnection);
 
-    try {
-      const expenses = await expenseModel.findAllByUserId(userId);
-      if (!expenses) {
-        throw new Error("Could not find expenses for user");
-      }
-      return expenses.map((e) => e.toObject());
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error retrieving expenses for user";
-      throw new Error(message);
+    const expenses = await expenseModel.findAllByUserId(userId);
+    if (!expenses) {
+      throw new HttpError(404, "Could not find expenses for user");
     }
+    return expenses.map((e) => e.toObject());
   },
 
   async getSingleExpense(
@@ -70,20 +55,12 @@ export const expenseController = {
   ) {
     const expenseModel = new ExpenseModel(databaseConnection);
 
-    try {
-      const expense = await expenseModel.findById(expenseId, userId);
-      if (!expense) {
-        throw new Error("Could not find expense for user");
-      }
-
-      return expense.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error retrieving expense for user";
-      throw new Error(message);
+    const expense = await expenseModel.findById(expenseId, userId);
+    if (!expense) {
+      throw new HttpError(404, "Could not find expense for user");
     }
+
+    return expense.toObject();
   },
 
   async updateExpense(
@@ -99,27 +76,21 @@ export const expenseController = {
 
     const isValidCategory = await categoryModel.findById(categoryId, userId);
     if (!isValidCategory) {
-      throw new Error("Invalid category");
+      throw new HttpError(400, "Invalid category");
     }
 
-    try {
-      const updatedExpense = await expenseModel.update(
-        expenseId,
-        categoryId,
-        amount,
-        description,
-        date,
-      );
-      if (!updatedExpense) {
-        throw new Error("Error updating expense");
-      }
-
-      return updatedExpense.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Unknown error updating expense";
-      throw new Error(message);
+    const updatedExpense = await expenseModel.update(
+      expenseId,
+      categoryId,
+      amount,
+      description,
+      date,
+    );
+    if (!updatedExpense) {
+      throw new HttpError(500, "Error updating expense");
     }
+
+    return updatedExpense.toObject();
   },
 
   async deleteExpense(
@@ -131,21 +102,15 @@ export const expenseController = {
 
     const existingExpense = await expenseModel.findById(expenseId, userId);
     if (!existingExpense) {
-      throw new Error("Could not find expense");
+      throw new HttpError(404, "Could not find expense");
     }
 
-    try {
-      const deletedExpense = await expenseModel.delete(expenseId, userId);
-      if (!deletedExpense) {
-        throw new Error("Error deleting expense");
-      }
-
-      return !!deletedExpense;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Unknown error deleting expense";
-      throw new Error(message);
+    const deletedExpense = await expenseModel.delete(expenseId, userId);
+    if (!deletedExpense) {
+      throw new HttpError(500, "Error deleting expense");
     }
+
+    return !!deletedExpense;
   },
 
   async findSheetByMonth(
@@ -156,23 +121,15 @@ export const expenseController = {
   ) {
     const expenseModel = new ExpenseModel(databaseConnection);
 
-    try {
-      const expensesByMonth = await expenseModel.findSheetByMonth(
-        year,
-        month,
-        userId,
-      );
-      if (!expensesByMonth || expensesByMonth.length === 0) {
-        return [];
-      }
-      return expensesByMonth.map((e) => e.toObject());
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error gathering expense by month";
-      throw new Error(message);
+    const expensesByMonth = await expenseModel.findSheetByMonth(
+      year,
+      month,
+      userId,
+    );
+    if (!expensesByMonth || expensesByMonth.length === 0) {
+      return [];
     }
+    return expensesByMonth.map((e) => e.toObject());
   },
 
   async getMonthlySummary(
@@ -183,23 +140,15 @@ export const expenseController = {
   ) {
     const expenseModel = new ExpenseModel(databaseConnection);
 
-    try {
-      const monthlySummary = await expenseModel.getMonthlySummary(
-        year,
-        month,
-        userId,
-      );
-      if (!monthlySummary) {
-        return {};
-      }
-      return monthlySummary;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error gathering monthly summary";
-      throw new Error(message);
+    const monthlySummary = await expenseModel.getMonthlySummary(
+      year,
+      month,
+      userId,
+    );
+    if (!monthlySummary) {
+      return {};
     }
+    return monthlySummary;
   },
 
   async exportData(
@@ -211,70 +160,64 @@ export const expenseController = {
   ) {
     const expenseModel = new ExpenseModel(databaseConnection);
 
-    try {
-      const fullData = await expenseModel.findSheetByMonth(year, month, userId);
+    const fullData = await expenseModel.findSheetByMonth(year, month, userId);
 
-      if (format === "json") {
-        const jsonRows = fullData.map((expense) => ({
-          id: expense.id,
-          user_id: expense.userIdValue,
-          category_id: expense.categoryIdValue,
-          amount: Number(expense.rawAmount) / 100,
-          description: expense.currentDescription,
-          date: expense.currentDate.toISOString().slice(0, 10),
-        }));
+    if (format === "json") {
+      const jsonRows = fullData.map((expense) => ({
+        id: expense.id,
+        user_id: expense.userIdValue,
+        category_id: expense.categoryIdValue,
+        amount: Number(expense.rawAmount) / 100,
+        description: expense.currentDescription,
+        date: expense.currentDate.toISOString().slice(0, 10),
+      }));
 
-        return {
-          data: JSON.stringify(jsonRows, null, 2),
-          contentType: "application/json",
-          extension: "json",
-        };
-      }
-
-      if (format === "csv") {
-        const headers = [
-          "id",
-          "user_id",
-          "category_id",
-          "amount",
-          "description",
-          "date",
-        ];
-
-        const rows = fullData.map((expense) => ({
-          id: expense.id,
-          user_id: expense.userIdValue,
-          category_id: expense.categoryIdValue,
-          amount: Number(expense.rawAmount) / 100,
-          description: expense.currentDescription,
-          date: expense.currentDate.toISOString().slice(0, 10),
-        }));
-
-        const csv = [
-          headers.join(","),
-          ...rows.map((row: Record<string, string | number>) =>
-            headers
-              .map((header) => {
-                const value = row[header] ?? "";
-                const escaped = String(value).replace(/"/g, '""');
-                return `"${escaped}"`;
-              })
-              .join(","),
-          ),
-        ].join("\n");
-
-        return {
-          data: csv,
-          contentType: "text/csv; charset=utf-8",
-          extension: "csv",
-        };
-      }
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error gathering monthly summary";
-      throw new Error(message);
+      return {
+        data: JSON.stringify(jsonRows, null, 2),
+        contentType: "application/json",
+        extension: "json",
+      };
     }
+
+    if (format === "csv") {
+      const headers = [
+        "id",
+        "user_id",
+        "category_id",
+        "amount",
+        "description",
+        "date",
+      ];
+
+      const rows = fullData.map((expense) => ({
+        id: expense.id,
+        user_id: expense.userIdValue,
+        category_id: expense.categoryIdValue,
+        amount: Number(expense.rawAmount) / 100,
+        description: expense.currentDescription,
+        date: expense.currentDate.toISOString().slice(0, 10),
+      }));
+
+      const csv = [
+        headers.join(","),
+        ...rows.map((row: Record<string, string | number>) =>
+          headers
+            .map((header) => {
+              const value = row[header] ?? "";
+              const escaped = String(value).replace(/"/g, '""');
+              return `"${escaped}"`;
+            })
+            .join(","),
+        ),
+      ].join("\n");
+
+      return {
+        data: csv,
+        contentType: "text/csv; charset=utf-8",
+        extension: "csv",
+      };
+    }
+
+    throw new HttpError(400, "Invalid export format");
   },
 };

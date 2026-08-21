@@ -1,5 +1,5 @@
 import { jwt as jwtPlugin } from "@elysiajs/jwt";
-import { HttpError } from "../utils/utils";
+import { HttpError } from "../utils";
 
 const jwtSecret = process.env.JWT_SECRET;
 if (!jwtSecret) {

@@ -1,7 +1,6 @@
 import { Elysia, t } from "elysia";
 import { db } from "../db";
 import { userController } from "../controllers/user.controller";
-import { HttpError } from "../utils/utils";
 import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
 
 export const userRoutes = new Elysia({ prefix: "/users" })
@@ -10,21 +9,14 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   .post(
     "/login",
     async ({ db, body, jwt }) => {
-      try {
-        const user = await userController.login(db, {
-          userEmail: body.email,
-          userPassword: body.password,
-        });
+      const user = await userController.login(db, {
+        userEmail: body.email,
+        userPassword: body.password,
+      });
 
-        const token = await jwt.sign({ sub: user.id });
+      const token = await jwt.sign({ sub: user.id });
 
-        return { token, user };
-      } catch (err: any) {
-        if (err.message === "INVALID_CREDENTIALS") {
-          throw new HttpError(401, "Invalid email or password");
-        }
-        throw new HttpError(500, "Internal Server Error");
-      }
+      return { token, user };
     },
     {
       body: t.Object({
@@ -51,23 +43,15 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   .post(
     "/register",
     async ({ db, body, jwt }) => {
-      try {
-        const newUser = await userController.registerUser(
-          db,
-          body.email,
-          body.password,
-        );
+      const newUser = await userController.registerUser(
+        db,
+        body.email,
+        body.password,
+      );
 
-        const token = await jwt.sign({ sub: newUser.id });
+      const token = await jwt.sign({ sub: newUser.id });
 
-        return { token, user: newUser };
-      } catch (err: any) {
-        if (err.message === "EMAIL_ALREADY_TAKEN") {
-          throw new HttpError(409, "Email already taken by existing user");
-        }
-        console.error("Registration error:", err);
-        throw new HttpError(500, "Internal Server Error");
-      }
+      return { token, user: newUser };
     },
     {
       body: t.Object({
@@ -126,14 +110,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   .delete(
     "/:userId",
     async ({ db, userId, body, set }) => {
-      const deletedUser = await userController.deleteProfile(
-        db,
-        userId,
-        body.userEmail,
-      );
-      if (!deletedUser) {
-        throw new HttpError(404, "User not found");
-      }
+      await userController.deleteProfile(db, userId, body.userEmail);
 
       set.status = 204;
       return { success: true };

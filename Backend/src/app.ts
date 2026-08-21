@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { db } from "./db";
-import { HttpError } from "./utils/utils";
+import { HttpError } from "./utils";
 import { userRoutes } from "./routes/user.routes";
 import { categoryRoutes } from "./routes/category.routes";
 import { expenseRoutes } from "./routes/expense.routes";
@@ -20,9 +20,9 @@ const app = new Elysia()
   }))
 
   .onError(({ error, set }) => {
+    console.error(error);
     if (error instanceof HttpError) {
       set.status = error.statusCode;
-      console.error(error.message);
       return { error: error.message };
     }
     set.status = 500;

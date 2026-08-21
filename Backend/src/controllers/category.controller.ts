@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { CategoryModel } from "../models/category.model";
+import { HttpError } from "../utils";
 
 export const categoryController = {
   async createCategory(
@@ -13,37 +14,21 @@ export const categoryController = {
       categoryName,
     );
     if (existingCategory) {
-      throw new Error("Category name already taken");
+      throw new HttpError(409, "Category name already taken");
     }
 
-    try {
-      const newCategory = await categoryModel.create(categoryName, userId);
-      if (!newCategory) {
-        throw new Error("Error creating category");
-      }
-
-      return newCategory.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown category registration error";
-      throw new Error(message);
+    const newCategory = await categoryModel.create(categoryName, userId);
+    if (!newCategory) {
+      throw new HttpError(500, "Error creating category");
     }
+
+    return newCategory.toObject();
   },
 
   async getCategoriesForUser(databaseConnection: typeof db, userId: string) {
     const categoryModel = new CategoryModel(databaseConnection);
-    try {
-      const categories = await categoryModel.findAllByUserId(userId);
-      return categories;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error retrieving categories for user";
-      throw new Error(message);
-    }
+    const categories = await categoryModel.findAllByUserId(userId);
+    return categories;
   },
 
   async getSingleCategory(
@@ -53,20 +38,12 @@ export const categoryController = {
   ) {
     const categoryModel = new CategoryModel(databaseConnection);
 
-    try {
-      const category = await categoryModel.findById(categoryId, userId);
-      if (!category) {
-        throw new Error("Could not find category for user");
-      }
-
-      return category.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Unknown error retrieving category for user";
-      throw new Error(message);
+    const category = await categoryModel.findById(categoryId, userId);
+    if (!category) {
+      throw new HttpError(404, "Could not find category for user");
     }
+
+    return category.toObject();
   },
 
   async updateCategory(
@@ -78,24 +55,18 @@ export const categoryController = {
     const categoryModel = new CategoryModel(databaseConnection);
     const existingCategory = await categoryModel.findById(categoryId, userId);
     if (!existingCategory) {
-      throw new Error("Could not find category");
+      throw new HttpError(404, "Could not find category");
     }
 
-    try {
-      const updatedCategory = await categoryModel.update(
-        categoryId,
-        categoryName,
-        userId,
-      );
-      if (!updatedCategory) {
-        throw new Error("Error updating category");
-      }
-      return updatedCategory.toObject();
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Unknown error updating category";
-      throw new Error(message);
+    const updatedCategory = await categoryModel.update(
+      categoryId,
+      categoryName,
+      userId,
+    );
+    if (!updatedCategory) {
+      throw new HttpError(500, "Error updating category");
     }
+    return updatedCategory.toObject();
   },
 
   async deleteCategory(
@@ -107,20 +78,14 @@ export const categoryController = {
 
     const existingCategory = await categoryModel.findById(categoryId, userId);
     if (!existingCategory) {
-      throw new Error("Could not find category");
+      throw new HttpError(404, "Could not find category");
     }
 
-    try {
-      const deletedCategory = await categoryModel.delete(categoryId, userId);
-      if (!deletedCategory) {
-        throw new Error("Error deleting category");
-      }
-
-      return !!deletedCategory;
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Unknown error deleting category";
-      throw new Error(message);
+    const deletedCategory = await categoryModel.delete(categoryId, userId);
+    if (!deletedCategory) {
+      throw new HttpError(500, "Error deleting category");
     }
+
+    return !!deletedCategory;
   },
 };

@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { db } from "../db";
 import { categoryController } from "../controllers/category.controller";
-import { HttpError } from "../utils/utils";
+import { HttpError } from "../utils";
 import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
 
 export const categoryRoutes = new Elysia({ prefix: "/categories" })
@@ -16,22 +16,15 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
       const { categoryName } = body as {
         categoryName: string;
       };
-      try {
-        const newCategory = await categoryController.createCategory(
-          db,
-          userId,
-          categoryName,
-        );
 
-        set.status = 201;
-        return newCategory;
-      } catch (err: any) {
-        if (err.message === "CATEGORY_ALREADY_TAKEN") {
-          throw new HttpError(409, "Category name already taken");
-        }
-        console.error("Category creation error: ", err);
-        throw new HttpError(500, "Internal server error");
-      }
+      const newCategory = await categoryController.createCategory(
+        db,
+        userId,
+        categoryName,
+      );
+
+      set.status = 201;
+      return newCategory;
     },
     {
       body: t.Object({
@@ -39,15 +32,9 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
       }),
     },
   )
+
   .get("/", async ({ db, userId }) => {
-    try {
-      const allCategoriesForUser =
-        await categoryController.getCategoriesForUser(db, userId);
-      return allCategoriesForUser;
-    } catch (err) {
-      console.error("Error retrieving categories for user: ", err);
-      throw new HttpError(500, "Internal server error");
-    }
+    return categoryController.getCategoriesForUser(db, userId);
   })
 
   /**
@@ -58,16 +45,7 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
     "/:categoryId",
     async ({ db, params, userId }) => {
       const { categoryId } = params as { categoryId: string };
-      try {
-        return await categoryController.getSingleCategory(
-          db,
-          categoryId,
-          userId,
-        );
-      } catch (err) {
-        console.error("Error retrieving category for user: ", err);
-        throw new HttpError(500, "Internal server error");
-      }
+      return categoryController.getSingleCategory(db, categoryId, userId);
     },
     {
       params: t.Object({
@@ -82,17 +60,12 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
       const { categoryId } = params as { categoryId: string };
       const { categoryName } = body as { categoryName: string };
 
-      try {
-        return await categoryController.updateCategory(
-          db,
-          categoryName,
-          categoryId,
-          userId,
-        );
-      } catch (err) {
-        console.error("Error updating category for user:", err);
-        throw new HttpError(500, "Internal server error");
-      }
+      return categoryController.updateCategory(
+        db,
+        categoryName,
+        categoryId,
+        userId,
+      );
     },
     {
       body: t.Object({
@@ -108,22 +81,18 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
     "/:categoryId",
     async ({ db, params, userId, set }) => {
       const { categoryId } = params as { categoryId: string };
-      try {
-        const deletedCategory = await categoryController.deleteCategory(
-          db,
-          categoryId,
-          userId,
-        );
-        if (!deletedCategory) {
-          throw new HttpError(404, "Category not found");
-        }
 
-        set.status = 204;
-        return { success: true };
-      } catch (err) {
-        console.error("Error deleting category for user:", err);
-        throw new HttpError(500, "Internal server error");
+      const deletedCategory = await categoryController.deleteCategory(
+        db,
+        categoryId,
+        userId,
+      );
+      if (!deletedCategory) {
+        throw new HttpError(404, "Category not found");
       }
+
+      set.status = 204;
+      return { success: true };
     },
     {
       params: t.Object({
