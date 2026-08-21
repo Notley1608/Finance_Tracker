@@ -81,6 +81,7 @@ export const expenseController = {
 
     const updatedExpense = await expenseModel.update(
       expenseId,
+      userId,
       categoryId,
       amount,
       description,

@@ -82,6 +82,7 @@ export class ExpenseModel {
 
   public async update(
     expenseId: string,
+    userId: string,
     categoryId?: string,
     amount?: number,
     description?: string,
@@ -90,7 +91,9 @@ export class ExpenseModel {
     const existingRecord = await this.database
       .select()
       .from(expenseSchema)
-      .where(eq(expenseSchema.id, expenseId));
+      .where(
+        and(eq(expenseSchema.id, expenseId), eq(expenseSchema.user_id, userId)),
+      );
 
     if (existingRecord.length === 0) {
       console.error("Could not find expense");
