@@ -248,7 +248,7 @@ export class ExpenseModel {
           ),
         );
       const totalCents = totalResult[0]?.totalCents ?? 0;
-      const totalSpentDollar = Number(totalCents);
+      const totalSpentDollar = Number(totalCents) / 100;
 
       const categoryResult = await this.database
         .select({

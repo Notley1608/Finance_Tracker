@@ -158,7 +158,7 @@ const passwordForm = reactive({
 
 const schema = z.object({
   name: z.string().nonempty("Invalid username"),
-  email: z.string().email("Invalid email"),
+  email: z.string("Invalid email"),
   password: z.string().min(8, "Must be at least 8 characters"),
 });
 
@@ -174,18 +174,17 @@ const saveProfile = async () => {
   try {
     await userStore.updateUser(userData.value.id, payload);
     isEditing.value = false;
+    toast.add({
+      title: "Profile saved",
+      description: "Profile successfully updated",
+      color: "success",
+    });
   } catch (err) {
     console.error("Error updating user: ", err);
     toast.add({
       title: "Error",
       description: "Error updating user",
       color: "error",
-    });
-  } finally {
-    toast.add({
-      title: "Profile saved",
-      description: "Profile successfully updated",
-      color: "success",
     });
   }
 };
@@ -206,18 +205,17 @@ const changePassword = async () => {
   try {
     await userStore.updateUser(userData.value.id, payload);
     showPasswordForm.value = false;
+    toast.add({
+      title: "Password changed",
+      description: "Password successfully updated",
+      color: "success",
+    });
   } catch (err) {
     console.error("Error updating password: ", err);
     toast.add({
       title: "Error",
       description: "Error updating password",
       color: "error",
-    });
-  } finally {
-    toast.add({
-      title: "Password changed",
-      description: "Password successfully updated",
-      color: "success",
     });
   }
 };
@@ -242,6 +240,11 @@ const deleteUser = async () => {
 
   try {
     await userStore.deleteUser(userData.value.id, profile.value?.email ?? "");
+    toast.add({
+      title: "User deleted",
+      description: "Successfully deleted account",
+      color: "success",
+    });
   } catch (err) {
     console.error("Error deleting user with : ", err);
     toast.add({
@@ -251,11 +254,6 @@ const deleteUser = async () => {
     });
   } finally {
     close();
-    toast.add({
-      title: "User deleted",
-      description: "Successfully deleted account",
-      color: "success",
-    });
     await navigateTo("/login");
   }
 };

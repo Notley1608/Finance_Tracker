@@ -110,7 +110,6 @@ export const useExpenseStore = defineStore(
         error.value = err.message || "Error deleting expense";
         throw err;
       } finally {
-        resetState();
         isLoading.value = false;
       }
     }
@@ -130,7 +129,6 @@ export const useExpenseStore = defineStore(
         error.value = err.message || "Error getting monthly sheet";
         throw err;
       } finally {
-        resetState();
         isLoading.value = false;
       }
     }
@@ -150,7 +148,6 @@ export const useExpenseStore = defineStore(
         error.value = err.message || "Error getting monthly summary";
         throw err;
       } finally {
-        resetState();
         isLoading.value = false;
       }
     }
@@ -170,7 +167,6 @@ export const useExpenseStore = defineStore(
         error.value = err.message || "Error exporting data";
         throw err;
       } finally {
-        resetState();
         isLoading.value = false;
       }
     }

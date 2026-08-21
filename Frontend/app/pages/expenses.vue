@@ -4,6 +4,11 @@
     :category-map="categoryMap"
     :is-loading="isLoading"
   />
+  <ExpenseModal
+    ref="expenseModal"
+    :category-map="categoryMap"
+    @submit="handleSubmit"
+  />
 </template>
 
 <script setup lang="ts">
@@ -11,6 +16,7 @@ import { useExpenseStore } from "~/stores/expense";
 import { useCategoryStore } from "~/stores/category";
 import { ref, computed, onMounted } from "vue";
 import ExpenseTable from "~/components/expense/ExpenseTable.vue";
+import ExpenseModal from "~/components/expense/ExpenseModal.vue";
 import type { Expense } from "~/types/expenses";
 import { definePageMeta } from "#imports";
 
@@ -23,6 +29,8 @@ const expenseStore = useExpenseStore();
 const categoryStore = useCategoryStore();
 
 const expenses = ref<Expense[] | null>([]);
+const expenseModal = ref<InstanceType<typeof ExpenseModal>>();
+
 const isLoading = ref(false);
 
 const categoryMap = computed(() => {

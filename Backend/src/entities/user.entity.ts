@@ -9,6 +9,14 @@ export interface UserProperties {
   updatedAt: string;
 }
 
+export interface SafeUser {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export class UserEntity {
   private userId: string;
   private userEmail: string;
@@ -42,7 +50,7 @@ export class UserEntity {
     return this.updatedAt;
   }
 
-  public toObject() {
+  public toObject(): SafeUser {
     return {
       id: this.userId,
       email: this.email,

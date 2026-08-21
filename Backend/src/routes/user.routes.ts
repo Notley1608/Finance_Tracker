@@ -1,18 +1,12 @@
 import { Elysia, t } from "elysia";
-import { jwt } from "@elysiajs/jwt";
 import { db } from "../db";
 import { userController } from "../controllers/user.controller";
 import { HttpError } from "../utils/utils";
+import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
 
 export const userRoutes = new Elysia({ prefix: "/users" })
   .decorate("db", db)
-  .use(
-    jwt({
-      name: "jwt",
-      secret: process.env.JWT_SECRET || "super-secret-key",
-      exp: "7d",
-    }),
-  )
+  .use(jwtMiddleware)
   .post(
     "/login",
     async ({ db, body, jwt }) => {
@@ -92,22 +86,9 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     },
   )
 
-  .derive(({ headers }) => {
-    const auth = headers["authorization"];
-    if (!auth?.startsWith("Bearer ")) {
-      throw new HttpError(401, "Unauthorized");
-    }
-    return { bearer: auth.slice(7) };
-  })
+  .derive(authDerive)
 
-  .resolve(async ({ bearer, jwt }) => {
-    const payload = await jwt.verify(bearer);
-    if (!payload) throw new HttpError(401, "Unauthorized");
-    if (!payload.sub || typeof payload.sub !== "string") {
-      throw new HttpError(401, "Invalid token payload");
-    }
-    return { userId: payload.sub };
-  })
+  .resolve(authResolve)
 
   /**
    * Single user routes
@@ -165,15 +146,5 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         userEmail: t.String({ format: "email" }),
       }),
     },
-  )
+  );
 
-  .onError(({ error, set }) => {
-    if (error instanceof HttpError) {
-      set.status = error.statusCode;
-      console.error(error.message);
-      return { error: error.message };
-    }
-    set.status = 500;
-    console.error("Internal server error, error unknown");
-    return { error: "Internal server error" };
-  });

@@ -25,7 +25,7 @@ export function useCategoriesApi() {
       });
     },
     getCategory(categoryId: string): Promise<Category> {
-      return apiClient<Category>(`categories/${categoryId}`, {
+      return apiClient<Category>(`/categories/${categoryId}`, {
         method: "GET",
       });
     },
