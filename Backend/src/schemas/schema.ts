@@ -28,7 +28,7 @@ export const expenseSchema = sqliteTable("expenses", {
     .references(() => userSchema.id, { onDelete: "cascade" }),
   category_id: text("category_id")
     .notNull()
-    .references(() => categorySchema.id, { onDelete: "set null" }),
+    .references(() => categorySchema.id, { onDelete: "cascade" }),
   amount: real("amount").notNull(),
   description: text("description"),
   date: text("date").notNull(),

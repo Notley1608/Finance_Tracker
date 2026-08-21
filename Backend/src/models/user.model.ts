@@ -142,7 +142,7 @@ export class UserModel {
         .select()
         .from(userSchema)
         .where(and(eq(userSchema.id, userId), eq(userSchema.email, userEmail)));
-      if (!existingUser) {
+      if (existingUser.length === 0) {
         console.error("Could not find user");
         return null;
       }
