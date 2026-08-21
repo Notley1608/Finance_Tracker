@@ -65,9 +65,6 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         if (err.message === "EMAIL_ALREADY_TAKEN") {
           throw new HttpError(409, "Email already taken by existing user");
         }
-        if (err.message === "WEAK_PASSWORD") {
-          throw new HttpError(400, "Password needs to be stronger");
-        }
         console.error("Registration error:", err);
         throw new HttpError(500, "Internal Server Error");
       }
@@ -147,4 +144,3 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       }),
     },
   );
-

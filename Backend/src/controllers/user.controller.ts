@@ -45,7 +45,7 @@ export const userController = {
     const userModel = new UserModel(databaseConnection);
     const existingUser = await userModel.findByEmail(userEmail);
     if (existingUser) {
-      throw new Error("Email already taken");
+      throw new Error("EMAIL_ALREADY_TAKEN");
     }
 
     try {
