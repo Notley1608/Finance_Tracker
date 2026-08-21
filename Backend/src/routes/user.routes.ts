@@ -65,12 +65,12 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   /**
    * Single user routes
    */
-  .get("/:userId", async ({ db, userId }) => {
+  .get("/me", async ({ db, userId }) => {
     return userController.getProfile(db, userId);
   })
 
   .patch(
-    "/:userId",
+    "/me",
     async ({ db, userId, body }) => {
       return userController.updateProfile(
         db,
@@ -99,7 +99,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
   )
 
   .delete(
-    "/:userId",
+    "/me",
     async ({ db, userId, body, set }) => {
       await userController.deleteProfile(db, userId, body.userEmail);
 
