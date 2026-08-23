@@ -1,11 +1,11 @@
 import { Elysia, t } from "elysia";
-import { db } from "../db";
+import { databasePlugin } from "../plugins/database";
 import { expenseController } from "../controllers/expense.controller";
 import { HttpError } from "../utils";
 import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
 
 export const expenseRoutes = new Elysia({ prefix: "/expenses" })
-  .decorate("db", db)
+  .use(databasePlugin)
   .use(jwtMiddleware)
   .derive(authDerive)
   .resolve(authResolve)

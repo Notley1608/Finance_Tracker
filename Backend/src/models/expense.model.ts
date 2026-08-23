@@ -113,7 +113,9 @@ export class ExpenseModel {
     const updatedRecords = await this.database
       .update(expenseSchema)
       .set(updateFields)
-      .where(eq(expenseSchema.id, expenseId))
+      .where(
+        and(eq(expenseSchema.id, expenseId), eq(expenseSchema.user_id, userId)),
+      )
       .returning();
     if (!updatedRecords || updatedRecords.length === 0) return null;
 
@@ -217,7 +219,7 @@ export class ExpenseModel {
     const startOfNextMonth = new Date(year, month, 1).toISOString();
 
     const totalResult = await this.database
-      .select({ totalCents: sum(expenseSchema.amount) })
+      .select({ totalAmount: sum(expenseSchema.amount) })
       .from(expenseSchema)
       .where(
         and(
@@ -226,7 +228,7 @@ export class ExpenseModel {
           lt(expenseSchema.date, startOfNextMonth),
         ),
       );
-    const totalAmount = totalResult[0]?.totalCents ?? 0;
+    const totalAmount = totalResult[0]?.totalAmount ?? 0;
     const totalSpentDollar = Number(totalAmount);
 
     const categoryResult = await this.database
@@ -246,7 +248,7 @@ export class ExpenseModel {
 
     const categoriesBreakdown = categoryResult.map((row) => {
       const rawCategoryAmount = row.amountSpent
-        ? parseInt(row.amountSpent, 10)
+        ? Number(row.amountSpent)
         : 0;
       return {
         categoryId: row.categoryId,

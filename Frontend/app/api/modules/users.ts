@@ -44,7 +44,7 @@ export function useUsersApi() {
      * Get user by ID
      */
     getUser(): Promise<User> {
-      return apiClient<User>('/me', {
+      return apiClient<User>('/users/me', {
         method: "GET",
       });
     },
@@ -53,7 +53,7 @@ export function useUsersApi() {
      * Update user
      */
     updateUser(payload: updateUserPayload): Promise<User> {
-      return apiClient<User>('/me', {
+      return apiClient<User>('/users/me', {
         method: "PATCH",
         body: payload,
       });
@@ -63,7 +63,7 @@ export function useUsersApi() {
      * Delete user
      */
     deleteUser(email: string): Promise<{ success: boolean }> {
-      return apiClient<{ success: boolean }>('/me', {
+      return apiClient<{ success: boolean }>('/users/me', {
         method: "DELETE",
         body: { userEmail: email },
       });

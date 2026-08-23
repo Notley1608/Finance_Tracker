@@ -3,4 +3,4 @@ import { Database } from "bun:sqlite";
 import * as schema from "./schemas/schema";
 
 const sqlite = new Database(`${import.meta.dir}/database.sqlite.db`);
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(sqlite.filename, { schema });

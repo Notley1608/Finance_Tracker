@@ -49,7 +49,7 @@ export class ExpenseEntity {
   }
 
   public getFormattedAmount(): string {
-    const dollars: number = this.amount / 100;
+    const dollars: number = this.amount;
     return dollars.toFixed(2);
   }
 

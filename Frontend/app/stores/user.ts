@@ -92,7 +92,7 @@ export const useUserStore = defineStore(
       error.value = null;
 
       try {
-        const response = await usersApi.getUser(userId);
+        const response = await usersApi.getUser();
         if (!response) {
           throw new Error("Invalid credentials");
         }
@@ -114,7 +114,7 @@ export const useUserStore = defineStore(
       error.value = null;
 
       try {
-        const response = await usersApi.updateUser(userId, payload);
+        const response = await usersApi.updateUser(payload);
         if (!response) {
           throw new Error("Invalid credential");
         }
@@ -132,7 +132,7 @@ export const useUserStore = defineStore(
       error.value = null;
 
       try {
-        const response = await usersApi.deleteUser(userId, email);
+        const response = await usersApi.deleteUser(email);
         return response.success;
       } catch (err: any) {
         error.value = err.message || "Error deleting user";
