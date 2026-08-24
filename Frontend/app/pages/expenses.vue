@@ -1,12 +1,15 @@
 <template>
-  <UButton type="submit" @click="createExpense">Add expense</UButton>
   <ExpenseTable
     :expenses="expenses"
     :category-map="categoryMap"
     :is-loading="isLoading"
     @edit="updateExpense"
     @delete="deleteExpense"
-  />
+  >
+    <template #toolbar>
+      <UButton @click="createExpense">Add expense</UButton>
+    </template>
+  </ExpenseTable>
   <ExpenseModal
     ref="expenseModal"
     :category-map="categoryMap"

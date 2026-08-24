@@ -9,6 +9,8 @@
         placeholder="Filter expenses..."
         icon="i-lucide-search"
       />
+
+      <slot name="toolbar" />
     </div>
 
     <div
