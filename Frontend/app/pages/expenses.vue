@@ -4,6 +4,7 @@
     :category-map="categoryMap"
     :is-loading="isLoading"
     @edit="updateExpense"
+    @delete="deleteExpense"
   />
   <ExpenseModal
     ref="expenseModal"
@@ -67,6 +68,17 @@ const handleSubmit = async (payload: ExpensePayload) => {
 
 const cancelEdit = () => {
   editingExpenseId.value = null;
+};
+
+const deleteExpense = async (expense: Expense) => {
+  editingExpenseId.value = expense.id;
+  try {
+    await expenseStore.deleteExpense(editingExpenseId.value);
+  } catch (error) {
+    console.error("Failed to delete expense: ", error);
+  } finally {
+    await expenseStore.getAllExpenses();
+  }
 };
 
 onMounted(async () => {

@@ -53,8 +53,8 @@ export function useExpensesApi() {
         body: payload,
       });
     },
-    deleteExpense(expenseId: string): Promise<{ success: boolean }> {
-      return apiClient<{ success: boolean }>(`/expenses/${expenseId}`, {
+    deleteExpense(expenseId: string): Promise<null> {
+      return apiClient<null>(`/expenses/${expenseId}`, {
         method: "DELETE",
       });
     },

@@ -22,12 +22,6 @@ export const useExpenseStore = defineStore(
     const isLoading = ref(false);
     const error = ref(null);
 
-    function resetState(): void {
-      expensesData.value = null;
-      expenseData.value = null;
-      error.value = null;
-    }
-
     async function getAllExpenses(): Promise<Expense[] | null> {
       isLoading.value = true;
       error.value = null;
@@ -99,13 +93,13 @@ export const useExpenseStore = defineStore(
       }
     }
 
-    async function deleteExpense(expenseId: string): Promise<boolean> {
+    async function deleteExpense(expenseId: string): Promise<null> {
       isLoading.value = true;
       error.value = null;
 
       try {
         const response = await expensesApi.deleteExpense(expenseId);
-        return response.success;
+        return response;
       } catch (err: any) {
         error.value = err.message || "Error deleting expense";
         throw err;
