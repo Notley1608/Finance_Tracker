@@ -3,11 +3,13 @@
     :expenses="expenses"
     :category-map="categoryMap"
     :is-loading="isLoading"
+    @edit="updateExpense"
   />
   <ExpenseModal
     ref="expenseModal"
     :category-map="categoryMap"
     @submit="handleSubmit"
+    @cancel="cancelEdit"
   />
 </template>
 
@@ -17,7 +19,7 @@ import { useCategoryStore } from "~/stores/category";
 import { ref, computed, onMounted } from "vue";
 import ExpenseTable from "~/components/expense/ExpenseTable.vue";
 import ExpenseModal from "~/components/expense/ExpenseModal.vue";
-import type { Expense } from "~/types/expenses";
+import type { Expense, ExpensePayload } from "~/types/expenses";
 import { definePageMeta } from "#imports";
 
 definePageMeta({
@@ -28,7 +30,8 @@ definePageMeta({
 const expenseStore = useExpenseStore();
 const categoryStore = useCategoryStore();
 
-const expenses = ref<Expense[] | null>([]);
+const expenses = computed(() => expenseStore.expensesData ?? []);
+const editingExpenseId = ref<string | null>(null);
 const expenseModal = ref<InstanceType<typeof ExpenseModal>>();
 
 const isLoading = ref(false);
@@ -40,6 +43,31 @@ const categoryMap = computed(() => {
   });
   return map;
 });
+const updateExpense = (expense: Expense) => {
+  expenseModal.value?.open(expense);
+  editingExpenseId.value = expense.id;
+};
+
+const handleSubmit = async (payload: ExpensePayload) => {
+  try {
+    if (editingExpenseId.value) {
+      await expenseStore.updateExpense(editingExpenseId.value, payload);
+    } else {
+      await expenseStore.createExpense(payload);
+    }
+
+    expenseModal.value?.close();
+    editingExpenseId.value = null;
+
+    await expenseStore.getAllExpenses();
+  } catch (error) {
+    console.error("Failed to save expense:", error);
+  }
+};
+
+const cancelEdit = () => {
+  editingExpenseId.value = null;
+};
 
 onMounted(async () => {
   isLoading.value = true;
@@ -49,8 +77,8 @@ onMounted(async () => {
       expenseStore.getAllExpenses(),
       categoryStore.getAllCategories(),
     ]);
-
-    expenses.value = expenseStore.expensesData;
+  } catch (err: any) {
+    console.error(err);
   } finally {
     isLoading.value = false;
   }

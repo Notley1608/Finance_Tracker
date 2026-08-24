@@ -1,3 +1,5 @@
+import { formatDate } from "../utils/index";
+
 export interface ExpenseProperties {
   expenseId: string;
   userId: string;
@@ -44,8 +46,8 @@ export class ExpenseEntity {
     return this.description;
   }
 
-  public get currentDate(): Date {
-    return this.date;
+  public get currentDate(): string {
+    return formatDate(this.date);
   }
 
   public getFormattedAmount(): string {
@@ -60,7 +62,7 @@ export class ExpenseEntity {
       categoryId: this.categoryId,
       amount: this.getFormattedAmount(),
       description: this.description,
-      date: this.date,
+      date: formatDate(this.date),
     };
   }
 }

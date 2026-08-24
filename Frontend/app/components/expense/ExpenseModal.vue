@@ -9,7 +9,7 @@
             </UFormField>
 
             <UFormField label="amount">
-              <UInput v-model="state.amount" :ui="{ base: 'pl-7' }" />
+              <UInput v-model="state.amount"/>
             </UFormField>
 
             <UFormField label="category">
@@ -54,6 +54,7 @@ const editingExpense = ref<Expense | null>(null);
 
 const open = (expense?: Expense) => {
   editingExpense.value = expense ?? null;
+
   if (expense) {
     state.description = expense.description;
     state.amount = expense.amount;
@@ -62,24 +63,24 @@ const open = (expense?: Expense) => {
   } else {
     resetState();
   }
+
   isOpen.value = true;
 };
 
-const cancel = () => {
-  resetState();
-  isOpen.value = false;
-};
 const close = () => {
   isOpen.value = false;
+  editingExpense.value = null;
+  resetState();
 };
 
-defineExpose({
-  open,
-  close,
-});
+const cancel = () => {
+  close();
+  emit("cancel");
+};
 
 const emit = defineEmits<{
   submit: [payload: ExpensePayload];
+  cancel: [];
 }>();
 
 const schema = z.object({
@@ -119,5 +120,11 @@ const handleSubmit = () => {
   };
 
   emit("submit", payload);
+  close();
 };
+
+defineExpose({
+  open,
+  close,
+});
 </script>
