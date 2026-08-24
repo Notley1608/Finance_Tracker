@@ -27,7 +27,12 @@ export const authResolve = async ({
   bearer: string;
   jwt: any;
 }) => {
-  const payload = await jwt.verify(bearer);
+  let payload;
+  try {
+    payload = await jwt.verify(bearer);
+  } catch {
+    throw new HttpError(401, "Unauthorized");
+  }
   if (!payload) throw new HttpError(401, "Unauthorized");
   if (!payload.sub || typeof payload.sub !== "string") {
     throw new HttpError(401, "Invalid token payload");

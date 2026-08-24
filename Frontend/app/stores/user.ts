@@ -87,7 +87,7 @@ export const useUserStore = defineStore(
       }
     }
 
-    async function getUser(userId: string): Promise<User | null> {
+    async function getUser(): Promise<User | null> {
       isLoading.value = true;
       error.value = null;
 
@@ -106,10 +106,7 @@ export const useUserStore = defineStore(
       }
     }
 
-    async function updateUser(
-      userId: string,
-      payload: updateUserPayload,
-    ): Promise<void> {
+    async function updateUser(payload: updateUserPayload): Promise<void> {
       isLoading.value = true;
       error.value = null;
 

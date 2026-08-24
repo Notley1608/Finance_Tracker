@@ -10,7 +10,18 @@
         icon="i-lucide-search"
       />
 
-      <slot name="toolbar" />
+      <div class="flex items-center gap-2">
+        <UDropdownMenu :items="sortItems">
+          <UButton
+            :icon="currentSortDesc ? 'i-lucide-arrow-down' : 'i-lucide-arrow-up'"
+            color="neutral"
+            variant="outline"
+            :label="currentSortLabel"
+          />
+        </UDropdownMenu>
+
+        <slot name="toolbar" />
+      </div>
     </div>
 
     <div
@@ -20,7 +31,6 @@
         ref="table"
         class="w-full"
         v-model:global-filter="globalFilter"
-        v-model:sorting="sorting"
         :data="expenseData"
         :columns="columns"
         :loading="isLoading"
@@ -101,13 +111,23 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(["edit", "delete"]);
 
-const expenseData = computed(
-  () =>
+const expenseData = computed(() => {
+  const mapped =
     props.expenses?.map((expense) => ({
       ...expense,
       category: props.categoryMap[expense.categoryId] ?? "Unknown",
-    })) ?? [],
-);
+    })) ?? [];
+
+  const sort = sorting.value[0];
+  if (!sort) return mapped;
+
+  return [...mapped].sort((a, b) => {
+    const aVal = a[sort.id as keyof typeof a] ?? "";
+    const bVal = b[sort.id as keyof typeof b] ?? "";
+    const cmp = String(aVal).localeCompare(String(bVal));
+    return sort.desc ? -cmp : cmp;
+  });
+});
 
 const pagination = ref({
   pageIndex: 0,
@@ -122,12 +142,37 @@ function setPageSize(size: number) {
 
 const globalFilter = ref("");
 
-const sorting = ref([
-  {
-    id: "date",
-    desc: true,
-  },
+const sorting = ref([{ id: "date", desc: true }]);
+
+const sortItems = computed(() => [
+  { label: "Description", onSelect: () => handleSort("description") },
+  { label: "Amount", onSelect: () => handleSort("amount") },
+  { label: "Category", onSelect: () => handleSort("category") },
+  { label: "Date", onSelect: () => handleSort("date") },
 ]);
+
+const currentSortLabel = computed(() => {
+  const colMap: Record<string, string> = {
+    description: "Description",
+    amount: "Amount",
+    category: "Category",
+    date: "Date",
+  };
+  const id = sorting.value[0]?.id ?? "";
+  const label = colMap[id] ?? "Sort";
+  const arrow = sorting.value[0]?.desc ? " ↓" : " ↑";
+  return label + arrow;
+});
+
+const currentSortDesc = computed(() => sorting.value[0]?.desc ?? true);
+
+function handleSort(colId: string) {
+  if (sorting.value[0]?.id === colId) {
+    sorting.value = [{ id: colId, desc: !sorting.value[0].desc }];
+  } else {
+    sorting.value = [{ id: colId, desc: false }];
+  }
+}
 
 const columns: TableColumn<Expense>[] = [
   {

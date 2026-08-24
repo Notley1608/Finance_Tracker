@@ -180,9 +180,4 @@ export const useExpenseStore = defineStore(
       exportData,
     };
   },
-  {
-    persist: {
-      pick: ["expenseData"],
-    },
-  },
 );

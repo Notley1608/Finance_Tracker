@@ -172,7 +172,7 @@ const saveProfile = async () => {
     newPassword: undefined,
   };
   try {
-    await userStore.updateUser(userData.value.id, payload);
+    await userStore.updateUser(payload);
     isEditing.value = false;
     toast.add({
       title: "Profile saved",
@@ -203,7 +203,7 @@ const changePassword = async () => {
   };
 
   try {
-    await userStore.updateUser(userData.value.id, payload);
+    await userStore.updateUser(payload);
     showPasswordForm.value = false;
     toast.add({
       title: "Password changed",
@@ -260,7 +260,7 @@ const deleteUser = async () => {
 
 onMounted(async () => {
   if (userData.value?.id) {
-    await userStore.getUser(userData.value.id);
+    await userStore.getUser();
   }
 });
 </script>
