@@ -1,5 +1,3 @@
-import { formatDate } from "../utils/index";
-
 export interface ExpenseProperties {
   expenseId: string;
   userId: string;
@@ -47,7 +45,10 @@ export class ExpenseEntity {
   }
 
   public get currentDate(): string {
-    return formatDate(this.date);
+    const y = this.date.getUTCFullYear();
+    const m = String(this.date.getUTCMonth() + 1).padStart(2, "0");
+    const d = String(this.date.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   }
 
   public getFormattedAmount(): string {
@@ -62,7 +63,7 @@ export class ExpenseEntity {
       categoryId: this.categoryId,
       amount: this.getFormattedAmount(),
       description: this.description,
-      date: formatDate(this.date),
+      date: this.currentDate,
     };
   }
 }

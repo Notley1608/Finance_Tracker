@@ -34,9 +34,9 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
     {
       body: t.Object({
         categoryId: t.String({ format: "uuid" }),
-        amount: t.Number(),
+        amount: t.Number({ min: 0.01 }),
         description: t.String(),
-        date: t.String(),
+        date: t.String({ format: "date" }),
       }),
     },
   )
@@ -149,9 +149,9 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
       }),
       body: t.Object({
         categoryId: t.String({ format: "uuid" }),
-        amount: t.Number(),
+        amount: t.Number({ minimum: 0.01 }),
         description: t.String(),
-        date: t.String(),
+        date: t.String({ format: "date" }),
       }),
     },
   )

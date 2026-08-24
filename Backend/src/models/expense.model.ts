@@ -175,8 +175,10 @@ export class ExpenseModel {
     month: number,
     userId: string,
   ): Promise<ExpenseEntity[]> {
-    const startOfMonth = new Date(year, month - 1, 1).toISOString();
-    const startOfNextMonth = new Date(year, month, 1).toISOString();
+    const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const startOfNextMonth = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
 
     const records = await this.database
       .select()
@@ -215,8 +217,10 @@ export class ExpenseModel {
     totalSpent: number;
     categories: Array<{ categoryId: string; amountSpent: number }>;
   }> {
-    const startOfMonth = new Date(year, month - 1, 1).toISOString();
-    const startOfNextMonth = new Date(year, month, 1).toISOString();
+    const startOfMonth = `${year}-${String(month).padStart(2, "0")}-01`;
+    const nextMonth = month === 12 ? 1 : month + 1;
+    const nextYear = month === 12 ? year + 1 : year;
+    const startOfNextMonth = `${nextYear}-${String(nextMonth).padStart(2, "0")}-01`;
 
     const totalResult = await this.database
       .select({ totalAmount: sum(expenseSchema.amount) })

@@ -8,7 +8,7 @@ export class HttpError extends Error {
 }
 
 export const formatDate = (date: Date = new Date()): string => {
-  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'Australia/Sydney' });
+  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'UTC' });
   return formatter.format(date);
 };
 

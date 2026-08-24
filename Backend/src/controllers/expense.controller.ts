@@ -170,7 +170,7 @@ export const expenseController = {
         category_id: expense.categoryIdValue,
         amount: Number(expense.rawAmount),
         description: expense.currentDescription,
-        date: expense.currentDate.toISOString().slice(0, 10),
+        date: expense.currentDate,
       }));
 
       return {
@@ -196,7 +196,7 @@ export const expenseController = {
         category_id: expense.categoryIdValue,
         amount: Number(expense.rawAmount),
         description: expense.currentDescription,
-        date: expense.currentDate.toISOString().slice(0, 10),
+        date: expense.currentDate,
       }));
 
       const csv = [
