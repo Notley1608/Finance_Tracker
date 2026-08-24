@@ -32,7 +32,7 @@ export const useExpenseStore = defineStore(
         return expensesData.value;
       } catch (err: any) {
         error.value = err?.message || "Failed to load expenses";
-        throw error;
+        throw err;
       } finally {
         isLoading.value = false;
       }
@@ -50,7 +50,7 @@ export const useExpenseStore = defineStore(
         return expenseData.value;
       } catch (err: any) {
         error.value = err?.message || "Failed to create expenses";
-        throw error;
+        throw err;
       } finally {
         isLoading.value = false;
       }

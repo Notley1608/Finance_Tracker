@@ -1,4 +1,5 @@
 <template>
+  <UButton type="submit" @click="createExpense">Add expense</UButton>
   <ExpenseTable
     :expenses="expenses"
     :category-map="categoryMap"
@@ -47,6 +48,11 @@ const categoryMap = computed(() => {
 const updateExpense = (expense: Expense) => {
   expenseModal.value?.open(expense);
   editingExpenseId.value = expense.id;
+};
+
+const createExpense = async () => {
+  editingExpenseId.value = null;
+  expenseModal.value?.open();
 };
 
 const handleSubmit = async (payload: ExpensePayload) => {

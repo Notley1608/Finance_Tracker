@@ -9,7 +9,7 @@
             </UFormField>
 
             <UFormField label="amount">
-              <UInput v-model="state.amount"/>
+              <UInput v-model="state.amount" />
             </UFormField>
 
             <UFormField label="category">
@@ -114,7 +114,7 @@ const resetState = () => {
 const handleSubmit = () => {
   const payload: ExpensePayload = {
     categoryId: state.categoryId,
-    amount: Math.round(parseFloat(state.amount)),
+    amount: parseFloat(state.amount),
     description: state.description,
     date: state.date,
   };
