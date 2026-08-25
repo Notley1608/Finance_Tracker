@@ -91,7 +91,6 @@ export class ExpenseModel {
       );
 
     if (existingRecord.length === 0) {
-      console.error("Could not find expense");
       return null;
     }
 
@@ -121,7 +120,6 @@ export class ExpenseModel {
 
     const newRecord = updatedRecords[0];
     if (!newRecord) {
-      console.error("Could not find or update expense wth ID: ", expenseId);
       return null;
     }
 

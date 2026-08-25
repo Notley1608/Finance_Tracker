@@ -89,7 +89,6 @@ export class UserModel {
       .where(eq(userSchema.id, userId));
 
     if (!existingUser) {
-      console.error("Could not find user");
       return null;
     }
     const updateFields: Partial<UserSchema> = {};
@@ -132,7 +131,6 @@ export class UserModel {
       .from(userSchema)
       .where(and(eq(userSchema.id, userId), eq(userSchema.email, userEmail)));
     if (existingUser.length === 0) {
-      console.error("Could not find user");
       return null;
     }
 
@@ -141,6 +139,6 @@ export class UserModel {
       .where(and(eq(userSchema.id, userId)))
       .returning();
 
-    return !!deletedUser;
+    return deletedUser.length > 0;
   }
 }

@@ -86,7 +86,6 @@ export class CategoryModel {
         and(eq(categorySchema.user_id, userId), eq(categorySchema.name, name)),
       );
     if (existingCategory) {
-      console.error("Category already exists");
       return null;
     }
     const [newCategory] = await this.database
@@ -119,7 +118,6 @@ export class CategoryModel {
         ),
       );
     if (!existingCategory) {
-      console.error("Could not find category for user");
       return null;
     }
 
