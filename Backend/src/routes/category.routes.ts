@@ -92,7 +92,7 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
       }
 
       set.status = 204;
-      return { success: true };
+      return;
     },
     {
       params: t.Object({

@@ -104,7 +104,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       await userController.deleteProfile(db, userId, body.userEmail);
 
       set.status = 204;
-      return { success: true };
+      return;
     },
     {
       body: t.Object({
