@@ -8,7 +8,16 @@ export class HttpError extends Error {
 }
 
 export const formatDate = (date: Date = new Date()): string => {
-  const formatter = new Intl.DateTimeFormat('en-CA', { timeZone: 'UTC' });
+  const formatter = new Intl.DateTimeFormat("en-CA", { timeZone: "UTC" });
   return formatter.format(date);
 };
 
+export const escapeCsvCell = (value: unknown): string => {
+  const stringValue = String(value ?? "");
+
+  const safeValue = /^[=+\-@]/.test(stringValue)
+    ? `'${stringValue}`
+    : stringValue;
+
+  return `"${safeValue.replace(/"/g, '""')}"`;
+};

@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { ExpenseModel } from "../models/expense.model";
 import { CategoryModel } from "../models/category.model";
-import { HttpError } from "../utils";
+import { HttpError, escapeCsvCell } from "../utils";
 
 interface expenseDetails {
   categoryId: string;
@@ -200,15 +200,9 @@ export const expenseController = {
       }));
 
       const csv = [
-        headers.join(","),
+        headers.map(escapeCsvCell).join(","),
         ...rows.map((row: Record<string, string | number>) =>
-          headers
-            .map((header) => {
-              const value = row[header] ?? "";
-              const escaped = String(value).replace(/"/g, '""');
-              return `"${escaped}"`;
-            })
-            .join(","),
+          headers.map((header) => escapeCsvCell(row[header])).join(","),
         ),
       ].join("\n");
 
