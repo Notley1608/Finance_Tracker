@@ -35,25 +35,25 @@
         :columns="columns"
         :loading="isLoading"
       >
-        <template #description-data="{ row }">
+        <template #description-cell="{ row }">
           <span class="font-medium text-highlighted">
             {{ row.original.description }}
           </span>
         </template>
 
-        <template #amount-data="{ row }">
+        <template #amount-cell="{ row }">
           <span class="font-medium tabular-nums text-highlighted">
             ${{ row.original.amount }}
           </span>
         </template>
 
-        <template #category-data="{ row }">
+        <template #category-cell="{ row }">
           <UBadge color="neutral" variant="subtle" size="sm">
             {{ row.original.category }}
           </UBadge>
         </template>
 
-        <template #date-data="{ row }">
+        <template #date-cell="{ row }">
           {{ formatDate(row.original.date) }}
         </template>
 
