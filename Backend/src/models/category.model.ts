@@ -79,6 +79,16 @@ export class CategoryModel {
     name: string,
     userId: string,
   ): Promise<CategoryEntity | null> {
+    const [existingCategory] = await this.database
+      .select()
+      .from(categorySchema)
+      .where(
+        and(eq(categorySchema.user_id, userId), eq(categorySchema.name, name)),
+      );
+    if (existingCategory) {
+      console.error("Category already exists");
+      return null;
+    }
     const [newCategory] = await this.database
       .insert(categorySchema)
       .values({ id: crypto.randomUUID(), user_id: userId, name: name })
@@ -105,6 +115,7 @@ export class CategoryModel {
         and(
           eq(categorySchema.id, categoryId),
           eq(categorySchema.user_id, userId),
+          eq(categorySchema.name, categoryName),
         ),
       );
     if (!existingCategory) {
