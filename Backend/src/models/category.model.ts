@@ -1,7 +1,7 @@
 import { db } from "../db";
-import { categorySchema, type CategorySchema } from "../schemas/schema";
+import { categorySchema, expenseSchema, type CategorySchema } from "../schemas/schema";
 import { CategoryEntity } from "../entities/category.entity";
-import { and, eq } from "drizzle-orm";
+import { and, eq, count } from "drizzle-orm";
 
 export class CategoryModel {
   /** methods
@@ -24,22 +24,31 @@ export class CategoryModel {
       id: dbRecord.id,
       name: dbRecord.name,
       userId: dbRecord.user_id,
+      expenseCount: 0,
     });
   }
 
   public async findAllByUserId(userId: string): Promise<CategoryEntity[]> {
     const records = await this.database
-      .select()
+      .select({
+        id: categorySchema.id,
+        name: categorySchema.name,
+        user_id: categorySchema.user_id,
+        expenseCount: count(expenseSchema.id),
+      })
       .from(categorySchema)
-      .where(eq(categorySchema.user_id, userId));
+      .leftJoin(expenseSchema, eq(categorySchema.id, expenseSchema.category_id))
+      .where(eq(categorySchema.user_id, userId))
+      .groupBy(categorySchema.id);
 
     if (!records || records.length === 0) return [];
 
-    return records.map((record: CategorySchema) => {
+    return records.map((record) => {
       return new CategoryEntity({
         id: record.id,
         userId: record.user_id,
         name: record.name,
+        expenseCount: record.expenseCount,
       });
     });
   }
@@ -99,6 +108,7 @@ export class CategoryModel {
       id: newCategory.id,
       userId: newCategory.user_id,
       name: newCategory.name,
+      expenseCount: 0,
     });
   }
 
