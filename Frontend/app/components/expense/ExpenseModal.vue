@@ -3,7 +3,12 @@
     <template #body>
       <div class="p-5">
         <section class="mb-5">
-          <UForm :state="state" :schema="schema" class="space-y-4">
+          <UForm
+            :state="state"
+            :schema="schema"
+            class="space-y-4"
+            @submit="handleSubmit"
+          >
             <UFormField label="description">
               <UInput v-model="state.description" />
             </UFormField>
@@ -29,7 +34,7 @@
             </UFormField>
 
             <div class="mb-5">
-              <UButton type="submit" @submit="handleSubmit"> Save </UButton>
+              <UButton type="submit"> Save </UButton>
               <UButton variant="outline" @click="cancel()"> Cancel </UButton>
             </div>
           </UForm>
@@ -111,16 +116,17 @@ const resetState = () => {
 };
 
 const handleSubmit = () => {
+  const amount = parseFloat(state.amount);
+  if (Number.isNaN(amount)) {
+    throw new Error("Invalid amount");
+  }
+
   const payload: ExpensePayload = {
     categoryId: state.categoryId,
-    amount: parseFloat(state.amount),
+    amount,
     description: state.description,
     date: state.date,
   };
-
-  if (!payload) {
-    throw new Error("Payload not acceptable");
-  }
 
   emit("submit", payload);
 };

@@ -127,7 +127,10 @@ onMounted(async () => {
       categoryStore.getAllCategories(),
     ]);
   } catch (err: any) {
-    console.error(err);
+    toast.add({
+      title: "Failed to load expenses",
+      color: "error",
+    });
   } finally {
     isLoading.value = false;
   }
