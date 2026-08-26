@@ -1,5 +1,7 @@
 import { useRuntimeConfig, navigateTo } from "#imports";
 import { useUserStore } from "~/stores/user";
+import { useExpenseStore } from "~/stores/expense";
+import { useCategoryStore } from "~/stores/category";
 
 export interface ApiOptions extends Omit<RequestInit, "body"> {
   body?: any;
@@ -38,7 +40,12 @@ export const createApiClient = () => {
     async onResponseError({ response }) {
       if (response.status === 401) {
         const userStore = useUserStore();
+        const expenseStore = useExpenseStore();
+        const categoryStore = useCategoryStore();
+
         userStore.resetState();
+        expenseStore.resetState();
+        categoryStore.resetState();
 
         await navigateTo("/login");
       }

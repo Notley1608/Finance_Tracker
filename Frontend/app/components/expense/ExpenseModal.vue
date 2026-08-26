@@ -29,7 +29,7 @@
             </UFormField>
 
             <div class="mb-5">
-              <UButton type="submit" @click="handleSubmit"> Save </UButton>
+              <UButton type="submit" @submit="handleSubmit"> Save </UButton>
               <UButton variant="outline" @click="cancel()"> Cancel </UButton>
             </div>
           </UForm>
@@ -74,7 +74,6 @@ const close = () => {
 };
 
 const cancel = () => {
-  close();
   emit("cancel");
 };
 
@@ -119,8 +118,11 @@ const handleSubmit = () => {
     date: state.date,
   };
 
+  if (!payload) {
+    throw new Error("Payload not acceptable");
+  }
+
   emit("submit", payload);
-  close();
 };
 
 defineExpose({

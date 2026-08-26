@@ -24,6 +24,14 @@ export const useExpenseStore = defineStore("expense", () => {
   const isLoading = ref(false);
   const error = ref(null);
 
+  function resetState(): void {
+    expensesData.value = null;
+    expenseData.value = null;
+    monthlySheetData.value = null;
+    monthlySummaryData.value = null;
+    error.value = null;
+  }
+
   async function getAllExpenses(): Promise<Expense[] | null> {
     isLoading.value = true;
     error.value = null;
@@ -103,6 +111,7 @@ export const useExpenseStore = defineStore("expense", () => {
       error.value = err.message || "Error deleting expense";
       throw err;
     } finally {
+      resetState();
       isLoading.value = false;
     }
   }
@@ -179,5 +188,6 @@ export const useExpenseStore = defineStore("expense", () => {
     getMonthlySheet,
     getMonthlySummary,
     exportData,
+    resetState,
   };
 });

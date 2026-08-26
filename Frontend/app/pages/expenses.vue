@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { useExpenseStore } from "~/stores/expense";
 import { useCategoryStore } from "~/stores/category";
+import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 import { ref, computed, onMounted } from "vue";
 import ExpenseTable from "~/components/expense/ExpenseTable.vue";
 import ExpenseModal from "~/components/expense/ExpenseModal.vue";
@@ -34,6 +35,8 @@ definePageMeta({
 
 const expenseStore = useExpenseStore();
 const categoryStore = useCategoryStore();
+
+const toast = useToast();
 
 const expenses = computed(() => expenseStore.expensesData ?? []);
 const editingExpenseId = ref<string | null>(null);
@@ -62,8 +65,16 @@ const handleSubmit = async (payload: ExpensePayload) => {
   try {
     if (editingExpenseId.value) {
       await expenseStore.updateExpense(editingExpenseId.value, payload);
+      toast.add({
+        title: "Expense updated",
+        color: "success",
+      });
     } else {
       await expenseStore.createExpense(payload);
+      toast.add({
+        title: "Expense created",
+        color: "success",
+      });
     }
 
     expenseModal.value?.close();
@@ -72,6 +83,10 @@ const handleSubmit = async (payload: ExpensePayload) => {
     await expenseStore.getAllExpenses();
   } catch (error) {
     console.error("Failed to save expense:", error);
+    toast.add({
+      title: "Error updating expense",
+      color: "error",
+    });
   }
 };
 
@@ -82,9 +97,22 @@ const cancelEdit = () => {
 const deleteExpense = async (expense: Expense) => {
   editingExpenseId.value = expense.id;
   try {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this expense? This cannot be undone.",
+    );
+    if (!confirmed) return;
+
     await expenseStore.deleteExpense(editingExpenseId.value);
+    toast.add({
+        title: "Expense deleted",
+        color: "success",
+      });
   } catch (error) {
     console.error("Failed to delete expense: ", error);
+    toast.add({
+      title: "Error deleting expense",
+      color: "error",
+    });
   } finally {
     await expenseStore.getAllExpenses();
   }

@@ -118,5 +118,6 @@ export const useCategoryStore = defineStore("category", () => {
     createCategory,
     updateCategory,
     deleteCategory,
+    resetState
   };
 });
