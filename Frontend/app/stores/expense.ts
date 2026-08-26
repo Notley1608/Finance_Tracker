@@ -1,183 +1,183 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import type { Expense, ExpensePayload } from "~/types/expenses";
+import type { Expense, ExpensePayload, MonthlySummary } from "~/types/expenses";
 import { useExpensesApi } from "~/api/modules/expenses";
 
-export const useExpenseStore = defineStore(
-  "expense",
-  () => {
-    const expensesApi = useExpensesApi();
+export const useExpenseStore = defineStore("expense", () => {
+  const expensesApi = useExpensesApi();
 
-    /**
-     * Expense details
-     * exporting data
-     * monthly summaries & sheets
-     * loading/error/success states
-     * methods:
-     * get all, create, update, delete, monthlySum, monthlySheet, export
-     */
+  /**
+   * Expense details
+   * exporting data
+   * monthly summaries & sheets
+   * loading/error/success states
+   * methods:
+   * get all, create, update, delete, monthlySum, monthlySheet, export
+   */
 
-    const expensesData = ref<Expense[] | null>(null);
-    const expenseData = ref<Expense | null>(null);
-    const isLoading = ref(false);
-    const error = ref(null);
+  const expensesData = ref<Expense[] | null>(null);
+  const expenseData = ref<Expense | null>(null);
+  const monthlySheetData = ref<Expense[] | null>(null);
+  const monthlySummaryData = ref<
+    { categoryId: string; amountSpent: number }[] | null
+  >(null);
+  const isLoading = ref(false);
+  const error = ref(null);
 
-    async function getAllExpenses(): Promise<Expense[] | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function getAllExpenses(): Promise<Expense[] | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.getAllExpenses();
-        expensesData.value = response || null;
-        return expensesData.value;
-      } catch (err: any) {
-        error.value = err?.message || "Failed to load expenses";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.getAllExpenses();
+      expensesData.value = response || null;
+      return expensesData.value;
+    } catch (err: any) {
+      error.value = err?.message || "Failed to load expenses";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function createExpense(
-      payload: ExpensePayload,
-    ): Promise<Expense | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function createExpense(
+    payload: ExpensePayload,
+  ): Promise<Expense | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.createExpense(payload);
-        expenseData.value = response || null;
-        return expenseData.value;
-      } catch (err: any) {
-        error.value = err?.message || "Failed to create expenses";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.createExpense(payload);
+      expenseData.value = response || null;
+      return expenseData.value;
+    } catch (err: any) {
+      error.value = err?.message || "Failed to create expenses";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function getSingleExpense(
-      expenseId: string,
-    ): Promise<Expense | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function getSingleExpense(expenseId: string): Promise<Expense | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.getExpense(expenseId);
-        expenseData.value = response || null;
-        return expenseData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error getting expense";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.getExpense(expenseId);
+      expenseData.value = response || null;
+      return expenseData.value;
+    } catch (err: any) {
+      error.value = err.message || "Error getting expense";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function updateExpense(
-      expenseId: string,
-      payload: ExpensePayload,
-    ): Promise<Expense | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function updateExpense(
+    expenseId: string,
+    payload: ExpensePayload,
+  ): Promise<Expense | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.updateExpense(expenseId, payload);
-        expenseData.value = response || null;
-        return expenseData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error updating expense";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.updateExpense(expenseId, payload);
+      expenseData.value = response || null;
+      return expenseData.value;
+    } catch (err: any) {
+      error.value = err.message || "Error updating expense";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function deleteExpense(expenseId: string): Promise<null> {
-      isLoading.value = true;
-      error.value = null;
+  async function deleteExpense(expenseId: string): Promise<void> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.deleteExpense(expenseId);
-        return response;
-      } catch (err: any) {
-        error.value = err.message || "Error deleting expense";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      await expensesApi.deleteExpense(expenseId);
+    } catch (err: any) {
+      error.value = err.message || "Error deleting expense";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function getMonthlySheet(
-      year: number,
-      month: number,
-    ): Promise<Expense[] | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function getMonthlySheet(
+    year: number,
+    month: number,
+  ): Promise<Expense[] | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.getMonthlySheet(year, month);
-        expensesData.value = response || null;
-        return expensesData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error getting monthly sheet";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.getMonthlySheet(year, month);
+      monthlySheetData.value = response || null;
+      return monthlySheetData.value;
+    } catch (err: any) {
+      error.value = err.message || "Error getting monthly sheet";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function getMonthlySummary(
-      year: number,
-      month: number,
-    ): Promise<Expense[] | null> {
-      isLoading.value = true;
-      error.value = null;
+  async function getMonthlySummary(
+    year: number,
+    month: number,
+  ): Promise<MonthlySummary[] | null> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.getMonthlySummary(year, month);
-        expensesData.value = response || null;
-        return expensesData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error getting monthly summary";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.getMonthlySummary(year, month);
+      monthlySummaryData.value = response || null;
+      return monthlySummaryData.value;
+    } catch (err: any) {
+      error.value = err.message || "Error getting monthly summary";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    async function exportData(
-      year: number,
-      month: number,
-      format: string,
-    ): Promise<Blob | Expense[]> {
-      isLoading.value = true;
-      error.value = null;
+  async function exportData(
+    year: number,
+    month: number,
+    format: string,
+  ): Promise<Blob | Expense[]> {
+    isLoading.value = true;
+    error.value = null;
 
-      try {
-        const response = await expensesApi.exportData(year, month, format);
-        return response;
-      } catch (err: any) {
-        error.value = err.message || "Error exporting data";
-        throw err;
-      } finally {
-        isLoading.value = false;
-      }
+    try {
+      const response = await expensesApi.exportData(year, month, format);
+      return response;
+    } catch (err: any) {
+      error.value = err.message || "Error exporting data";
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
+  }
 
-    return {
-      expensesData,
-      expenseData,
-      isLoading,
-      error,
-      getAllExpenses,
-      createExpense,
-      getSingleExpense,
-      updateExpense,
-      deleteExpense,
-      getMonthlySheet,
-      getMonthlySummary,
-      exportData,
-    };
-  },
-);
+  return {
+    expensesData,
+    expenseData,
+    monthlySheetData,
+    monthlySummaryData,
+    isLoading,
+    error,
+    getAllExpenses,
+    createExpense,
+    getSingleExpense,
+    updateExpense,
+    deleteExpense,
+    getMonthlySheet,
+    getMonthlySummary,
+    exportData,
+  };
+});

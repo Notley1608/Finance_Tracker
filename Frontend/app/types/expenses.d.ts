@@ -13,3 +13,8 @@ export interface ExpensePayload {
     description: string;
     date: string;
 }
+
+export interface MonthlySummary {
+  categoryId: string;
+  amountSpent: number;
+}

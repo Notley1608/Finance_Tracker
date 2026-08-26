@@ -1,4 +1,4 @@
-import type { Expense, ExpensePayload } from "~/types/expenses";
+import type { Expense, ExpensePayload, MonthlySummary } from "~/types/expenses";
 import { createApiClient } from "~/api/client";
 
 export function useExpensesApi() {
@@ -33,8 +33,8 @@ export function useExpensesApi() {
         query: { year, month },
       });
     },
-    getMonthlySummary(year: number, month: number): Promise<Expense[]> {
-      return apiClient<Expense[]>("/expenses/monthly-summary", {
+    getMonthlySummary(year: number, month: number): Promise<MonthlySummary[]> {
+      return apiClient<MonthlySummary[]>("/expenses/monthly-summary", {
         method: "GET",
         query: { year, month },
       });
