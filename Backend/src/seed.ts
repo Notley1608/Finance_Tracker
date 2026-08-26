@@ -91,6 +91,114 @@ async function seed() {
         amount: 500,
         description: "Air ticket",
       },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 68.45,
+        description: "Weekly groceries",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 124.8,
+        description: "Electricity bill",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 42.5,
+        description: "Airport train",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 31.2,
+        description: "Fruit and vegetables",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 79.99,
+        description: "Internet bill",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 18.75,
+        description: "Bus fare",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 54.3,
+        description: "Supermarket supplies",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 45.6,
+        description: "Water bill",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 135,
+        description: "Hotel booking",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 22.9,
+        description: "Bakery and snacks",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 59.95,
+        description: "Mobile phone bill",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 12.5,
+        description: "Train ticket",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 87.15,
+        description: "Monthly grocery run",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 32.4,
+        description: "Gas bill",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 76.2,
+        description: "Taxi to station",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Groceries",
+        amount: 43.75,
+        description: "Household groceries",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Utilities",
+        amount: 110,
+        description: "Council utilities",
+      },
+      {
+        userEmail: "test@example.com",
+        categoryName: "Travel",
+        amount: 29.95,
+        description: "Rideshare trip",
+      },
     ];
 
     for (const expense of expensesToSeed) {
@@ -104,7 +212,9 @@ async function seed() {
         continue;
       }
 
-      const categoryId = createdCategories.get(`${user.id}:${expense.categoryName}`)?.id;
+      const categoryId = createdCategories.get(
+        `${user.id}:${expense.categoryName}`,
+      )?.id;
       if (!categoryId) {
         console.warn(
           `Skipping expense '${expense.description}' because category '${expense.categoryName}' was not found for user ${user.email}`,
