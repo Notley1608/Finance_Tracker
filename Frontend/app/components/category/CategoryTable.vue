@@ -1,12 +1,12 @@
 <template>
-  <div class="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 mb-6">
+  <div class="mx-auto w-full max-w-3xl px-4 sm:px-6 lg:px-8 mb-6">
     <div
       class="flex items-center justify-between border-b border-default px-4 py-4"
     >
       <UInput
         v-model="search"
         class="w-full max-w-sm"
-        placeholder="Filter expenses..."
+        placeholder="Filter categories..."
         icon="i-lucide-search"
       />
 
@@ -57,7 +57,7 @@
 
         <template #expense-associated-cell="{ row }">
           <span class="font-medium tabular-nums text-highlighted">
-            ${{ row.original.expenses }}
+            ${{ row.original.expenseCount }}
           </span>
         </template>
 
@@ -144,9 +144,13 @@ const sortedCategories = computed(() => {
 
     let cmp: number;
 
-    cmp = String(aVal).localeCompare(String(bVal), undefined, {
-      sensitivity: "base",
-    });
+    if (sort.id === "expenseCount") {
+      cmp = Number(aVal) - Number(bVal);
+    } else {
+      cmp = String(aVal).localeCompare(String(bVal), undefined, {
+        sensitivity: "base",
+      });
+    }
 
     return sort.desc ? -cmp : cmp;
   });
@@ -196,7 +200,7 @@ const columns: TableColumn<Category>[] = [
     },
   },
   {
-    accessorKey: "expenses-count",
+    accessorKey: "expenseCount",
     header: "Expenses count",
     meta: {
       class: {

@@ -5,10 +5,14 @@ export function useCategories() {
   const pageSize = ref(16);
   const search = ref("");
 
-  function filterCategories<T extends { name: string }>(categories: T[]): T[] {
+  function filterCategories<T extends { name: string; expenseCount: number }>(
+    categories: T[],
+  ): T[] {
     const query = search.value.trim().toLowerCase();
     if (!query) return categories;
-    return categories.filter((e) => e.name.toLowerCase().includes(query));
+    return categories.filter(
+      (e) => e.name.toLowerCase().includes(query) || e.expenseCount,
+    );
   }
 
   function paginate<T>(items: T[]): T[] {
