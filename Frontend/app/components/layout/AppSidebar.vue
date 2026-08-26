@@ -17,17 +17,17 @@ const route = useRoute();
 const items = [
   {
     label: "Dashboard",
-    icon: "i-heroicons-outline-home",
+    icon: "i-heroicons-home",
     to: "/dashboard",
   },
   {
     label: "Expenses",
-    icon: "i-heroicons-outline-currency-dollar",
+    icon: "i-heroicons-currency-dollar",
     to: "/expenses",
   },
   {
     label: "Categories",
-    icon: "i-heroicons-outline-tag",
+    icon: "i-heroicons-tag",
     to: "/categories",
   },
 ];

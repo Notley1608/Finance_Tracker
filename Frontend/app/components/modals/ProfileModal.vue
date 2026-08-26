@@ -102,11 +102,11 @@
           <h3 class="text-lg font-semibold m-0 mb-3">Danger Zone</h3>
 
           <div class="flex flex-col gap-3">
-            <UButton icon="trash" variant="soft" @click="deleteUser">
+            <UButton variant="soft" @click="deleteUser">
               Delete account
             </UButton>
 
-            <UButton icon="arrow-down-on-square-stack" variant="soft">
+            <UButton icon="i-heroicons-arrow-down-tray" variant="soft">
               Export data
             </UButton>
           </div>
