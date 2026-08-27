@@ -1,5 +1,9 @@
 import { db } from "../db";
-import { categorySchema, expenseSchema, type CategorySchema } from "../schemas/schema";
+import {
+  categorySchema,
+  expenseSchema,
+  type CategorySchema,
+} from "../schemas/schema";
 import { CategoryEntity } from "../entities/category.entity";
 import { and, eq, count } from "drizzle-orm";
 
@@ -124,11 +128,15 @@ export class CategoryModel {
         and(
           eq(categorySchema.id, categoryId),
           eq(categorySchema.user_id, userId),
-          eq(categorySchema.name, categoryName),
         ),
       );
     if (!existingCategory) {
       return null;
+    }
+
+    const duplicate = await this.findByName(userId, categoryName);
+    if (duplicate && duplicate.id !== categoryId) {
+      return null; 
     }
 
     const [updatedRecord] = await this.database

@@ -92,13 +92,12 @@ export const useCategoryStore = defineStore("category", () => {
     }
   }
 
-  async function deleteCategory(categoryId: string): Promise<boolean> {
+  async function deleteCategory(categoryId: string): Promise<void> {
     isLoading.value = true;
     error.value = null;
 
     try {
-      const response = await categoriesApi.deleteCategory(categoryId);
-      return response.success;
+      await categoriesApi.deleteCategory(categoryId);
     } catch (err: any) {
       error.value = err?.message || "Failed to delete category";
       throw error;
@@ -118,6 +117,6 @@ export const useCategoryStore = defineStore("category", () => {
     createCategory,
     updateCategory,
     deleteCategory,
-    resetState
+    resetState,
   };
 });

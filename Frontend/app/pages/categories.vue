@@ -2,8 +2,11 @@
   <CategoryTable
     :categories="categories"
     :is-loading="isLoading"
+    :editing-id="editingCategoryId"
     @edit="updateCategory"
     @delete="deleteCategory"
+    @submit="handleSubmit"
+    @cancel="cancelEdit"
   >
     <template #toolbar>
       <UButton @click="createCategory">Add category</UButton>
@@ -30,37 +33,34 @@ const toast = useToast();
 
 const categories = computed(() => categoryStore.categoriesData ?? []);
 const editingCategoryId = ref<string | null>(null);
-// const categoryModal = ref<InstanceType<typeof CategoryModal>>();
 
 const isLoading = ref(false);
 
 const updateCategory = (category: Category) => {
-  // categoryModal.value?.open(category);
   editingCategoryId.value = category.id;
 };
 
 const createCategory = async () => {
   editingCategoryId.value = null;
-  // categoryModal.value?.open();
+  const name = window.prompt("Enter category name:");
+  if (!name?.trim()) return;
+  try {
+    await categoryStore.createCategory(name.trim());
+    toast.add({ title: "Category created", color: "success" });
+    await categoryStore.getAllCategories();
+  } catch (error) {
+    toast.add({ title: "Error creating category", color: "error" });
+  }
 };
 
-const handleSubmit = async (categoryName: string) => {
+const handleSubmit = async (payload: { id: string; name: string }) => {
   try {
-    if (editingCategoryId.value) {
-      await categoryStore.updateCategory(editingCategoryId.value, categoryName);
-      toast.add({
-        title: "Category updated",
-        color: "success",
-      });
-    } else {
-      await categoryStore.createCategory(categoryName);
-      toast.add({
-        title: "Category created",
-        color: "success",
-      });
-    }
+    await categoryStore.updateCategory(payload.id, payload.name);
+    toast.add({
+      title: "Category updated",
+      color: "success",
+    });
 
-    // categoryModal.value?.close();
     editingCategoryId.value = null;
 
     await categoryStore.getAllCategories();

@@ -37,7 +37,7 @@
           </button>
         </template>
 
-        <template #expense-count-header>
+        <template #expenseCount-header>
           <span
             class="flex items-center gap-1 font-semibold hover:text-highlighted cursor-pointer"
           >
@@ -46,12 +46,21 @@
         </template>
 
         <template #name-cell="{ row }">
-          <span class="font-medium text-highlighted">
+          <UInput
+            v-if="editingId === row.original.id"
+            ref="editInput"
+            v-model="editingCategory"
+            @keyup.enter="
+              emit('submit', { id: row.original.id, name: editingCategory })
+            "
+            @keyup.escape="emit('cancel')"
+          />
+          <span class="font-medium text-highlighted" v-else>
             {{ row.original.name }}
           </span>
         </template>
 
-        <template #expense-count-cell="{ row }">
+        <template #expenseCount-cell="{ row }">
           <span class="font-medium tabular-nums text-highlighted">
             {{ row.original.expenseCount }}
           </span>
@@ -99,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
 import type { Category } from "~/types/categories";
 import type { TableColumn } from "@nuxt/ui";
 import { useCategories } from "~/composables/useCategories";
@@ -107,8 +116,9 @@ import { useCategories } from "~/composables/useCategories";
 const props = defineProps<{
   categories: Category[] | null;
   isLoading: boolean;
+  editingId: string | null;
 }>();
-const emit = defineEmits(["edit", "delete"]);
+const emit = defineEmits(["edit", "delete", "cancel", "submit"]);
 
 const {
   page,
@@ -122,6 +132,24 @@ const {
 
 const filteredCategories = computed(() =>
   filterCategories(props.categories || []),
+);
+
+/**
+ * Actions
+ */
+const editingCategory = ref("");
+const editInput = ref<InstanceType<any>>(null);
+
+watch(
+  () => props.editingId,
+  async (id) => {
+    if (id) {
+      const cat = props.categories?.find((c) => c.id === id);
+      editingCategory.value = cat?.name ?? "";
+      await nextTick();
+      editInput.value?.inputRef?.focus();
+    }
+  },
 );
 
 /**
@@ -196,7 +224,7 @@ const columns: TableColumn<Category>[] = [
     },
   },
   {
-    accessorKey: "expense-count",
+    accessorKey: "expenseCount",
     header: "Expenses count",
     meta: {
       class: {

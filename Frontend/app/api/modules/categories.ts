@@ -38,8 +38,8 @@ export function useCategoriesApi() {
         body: { categoryName },
       });
     },
-    deleteCategory(categoryId: string): Promise<{ success: boolean }> {
-      return apiClient<{ success: boolean }>(`/categories/${categoryId}`, {
+    deleteCategory(categoryId: string): Promise<null> {
+      return apiClient<null>(`/categories/${categoryId}`, {
         method: "DELETE",
       });
     },
