@@ -33,8 +33,8 @@ export function useExpensesApi() {
         query: { year, month },
       });
     },
-    getMonthlySummary(year: number, month: number): Promise<MonthlySummary[]> {
-      return apiClient<MonthlySummary[]>("/expenses/monthly-summary", {
+    getMonthlySummary(year: number, month: number): Promise<MonthlySummary> {
+      return apiClient<MonthlySummary>("/expenses/monthly-summary", {
         method: "GET",
         query: { year, month },
       });

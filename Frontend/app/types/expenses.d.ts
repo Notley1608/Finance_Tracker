@@ -8,13 +8,19 @@ export interface Expense {
 }
 
 export interface ExpensePayload {
-    categoryId: string;
-    amount: number;
-    description: string;
-    date: string;
+  categoryId: string;
+  amount: number;
+  description: string;
+  date: string;
 }
 
-export interface MonthlySummary {
-  categoryId: string;
+export interface CategorySpend {
   amountSpent: number;
+  categoryId: string;
+}
+export interface MonthlySummary {
+  categories: CategorySpend[];
+  month: number;
+  totalSpent: number;
+  year: number;
 }

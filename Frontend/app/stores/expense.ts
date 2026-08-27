@@ -18,9 +18,7 @@ export const useExpenseStore = defineStore("expense", () => {
   const expensesData = ref<Expense[] | null>(null);
   const expenseData = ref<Expense | null>(null);
   const monthlySheetData = ref<Expense[] | null>(null);
-  const monthlySummaryData = ref<
-    { categoryId: string; amountSpent: number }[] | null
-  >(null);
+  const monthlySummaryData = ref<MonthlySummary | null>(null);
   const isLoading = ref(false);
   const error = ref(null);
 
@@ -138,7 +136,7 @@ export const useExpenseStore = defineStore("expense", () => {
   async function getMonthlySummary(
     year: number,
     month: number,
-  ): Promise<MonthlySummary[] | null> {
+  ): Promise<MonthlySummary | null> {
     isLoading.value = true;
     error.value = null;
 
