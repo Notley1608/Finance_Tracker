@@ -28,25 +28,21 @@
         <template #name-header>
           <button
             class="flex items-center gap-1 font-semibold hover:text-highlighted cursor-pointer"
-            @click="handleSort('description')"
+            @click="handleSort('name')"
           >
             Name
-            <span v-if="isActiveSort('description')" class="text-muted text-xs">
+            <span v-if="isActiveSort('name')" class="text-muted text-xs">
               {{ activeSortDesc ? "↓" : "↑" }}
             </span>
           </button>
         </template>
 
-        <template #expense-associated-header>
-          <button
+        <template #expense-count-header>
+          <span
             class="flex items-center gap-1 font-semibold hover:text-highlighted cursor-pointer"
-            @click="handleSort('amount')"
           >
             Expense count
-            <span v-if="isActiveSort('amount')" class="text-muted text-xs">
-              {{ activeSortDesc ? "↓" : "↑" }}
-            </span>
-          </button>
+          </span>
         </template>
 
         <template #name-cell="{ row }">
@@ -55,9 +51,9 @@
           </span>
         </template>
 
-        <template #expense-associated-cell="{ row }">
+        <template #expense-count-cell="{ row }">
           <span class="font-medium tabular-nums text-highlighted">
-            ${{ row.original.expenseCount }}
+            {{ row.original.expenseCount }}
           </span>
         </template>
 
@@ -200,7 +196,7 @@ const columns: TableColumn<Category>[] = [
     },
   },
   {
-    accessorKey: "expenseCount",
+    accessorKey: "expense-count",
     header: "Expenses count",
     meta: {
       class: {

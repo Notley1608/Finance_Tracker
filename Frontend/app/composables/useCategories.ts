@@ -5,13 +5,13 @@ export function useCategories() {
   const pageSize = ref(16);
   const search = ref("");
 
-  function filterCategories<T extends { name: string; expenseCount: number }>(
+  function filterCategories<T extends { name: string }>(
     categories: T[],
   ): T[] {
     const query = search.value.trim().toLowerCase();
     if (!query) return categories;
     return categories.filter(
-      (e) => e.name.toLowerCase().includes(query) || e.expenseCount,
+      (e) => e.name.toLowerCase().includes(query),
     );
   }
 
