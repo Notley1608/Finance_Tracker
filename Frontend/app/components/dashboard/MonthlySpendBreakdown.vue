@@ -37,22 +37,21 @@
     </div>
 
     <p
-      v-if="rows.length === 0 || loading === true"
+      v-if="amounts.length === 0 || loading === true"
       class="text-sm text-muted py-8 text-center"
     >
       No expenses recorded for {{ monthName }}.
     </p>
 
     <ClientOnly v-else>
-      <BarChart
-        :data="rows"
-        :categories="chartCategories"
-        :x-formatter="(i: number) => rows[i]?.category ?? ''"
-        :y-axis="seriesKeys"
-        x-label="Category"
-        y-label="Amount"
-        :height="300"
-        :padding="{ left: 60 }"
+      <DonutChart
+        :data="amounts"
+        :categories="donutCategories"
+        :height="260"
+        :radius="6"
+        :arc-width="24"
+        :pad-angle="0"
+        :legend-style="{ marginTop: '12px' }"
       />
       <template #fallback>
         <div
@@ -62,6 +61,24 @@
         </div>
       </template>
     </ClientOnly>
+
+    <div
+      v-if="biggestSegment"
+      class="flex items-center justify-between mt-4 pt-3 border-t border-default"
+    >
+      <div class="flex items-center gap-2">
+        <span
+          class="w-3 h-3 rounded-full"
+          :style="{ backgroundColor: biggestSegment.colour ?? colourFor(0) }"
+        />
+        <span class="text-sm text-muted"
+          >Biggest spend in {{ monthName }}:
+        </span>
+      </div>
+      <span class="text-sm font-semibold text-highlighted">
+        {{ biggestSegment.name }} {{ formatAmount(biggestSegment.amount) }}
+      </span>
+    </div>
   </div>
 </template>
 
@@ -70,6 +87,7 @@ import { computed } from "vue";
 import type { Category } from "~/types/categories";
 import type { MonthlySummary } from "~/types/expenses";
 import { MONTH_NAMES, FALLBACK_COLOURS } from "~/consts";
+import { formatAmount } from "~/utils";
 
 const props = defineProps<{
   categories: Category[];
@@ -119,25 +137,27 @@ const categoryById = computed(() => {
   return map;
 });
 
-const activeCategories = computed(() =>
-  (props.summary?.categories ?? [])
+const segments = computed(() => {
+  const byId = categoryById.value;
+  return (props.summary?.categories ?? [])
     .filter((c) => c.amountSpent > 0)
-    .map((c) => ({ id: c.categoryId, amount: c.amountSpent })),
+    .map((c) => ({
+      name: byId.get(c.categoryId)?.name ?? "Deleted category",
+      colour: byId.get(c.categoryId)?.colour,
+      amount: c.amountSpent,
+    }));
+});
+
+const biggestSegment = computed(
+  () => [...segments.value].sort((a, b) => b.amount - a.amount)[0] ?? null,
 );
 
-const rows = computed(() =>
-  activeCategories.value.map((c) => ({
-    category: categoryById.value.get(c.id)?.name ?? "Deleted category",
-    [c.id]: c.amount,
-  })),
-);
+const amounts = computed(() => segments.value.map((s) => s.amount));
 
-const seriesKeys = computed(() => activeCategories.value.map((c) => c.id));
-
-const chartCategories = computed(() => {
+const donutCategories = computed(() => {
   const config: Record<string, { name: string; color: string }> = {};
-  props.categories.forEach((cat, index) => {
-    config[cat.id] = { name: cat.name, color: cat.colour ?? colourFor(index) };
+  segments.value.forEach((s, index) => {
+    config[s.name] = { name: s.name, color: s.colour ?? colourFor(index) };
   });
   return config;
 });

@@ -8,7 +8,7 @@
 
     <StatCard
       label="Total expenses this month"
-      :value="formattedExpenseCount"
+      :value="formatAmount(expenseCount)"
       icon="i-heroicons-receipt"
       colour="neutral"
     />
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import StatCard from "./StatCard.vue";
+import { formatAmount } from "~/utils";
 
 const props = defineProps<{
   totalSpent: number;
@@ -38,11 +39,6 @@ const props = defineProps<{
   avgPerExpense: number;
 }>();
 
-const formattedExpenseCount = computed(() =>
-  props.expenseCount.toLocaleString("en-AU", {
-    minimumFractionDigits: 2,
-  }),
-);
 const formattedAvgPerExpense = computed(
   () =>
     `$${props.avgPerExpense.toLocaleString("en-AU", {

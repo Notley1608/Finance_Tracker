@@ -56,9 +56,11 @@ const user = computed(() => userStore.userData ?? null);
 const expenseStore = useExpenseStore();
 const expenses = computed(() => expenseStore.expensesData ?? null);
 const monthlySheetData = computed(() => expenseStore.monthlySheetData ?? null);
+console.log(monthlySheetData);
 const monthlySummaryData = computed(
   () => expenseStore.monthlySummaryData ?? null,
 );
+console.log(monthlySummaryData);
 
 /**
  * Stat card data

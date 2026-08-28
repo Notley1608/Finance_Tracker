@@ -13,3 +13,11 @@ export function formatDate(date: string | Date) {
     year: "numeric",
   });
 }
+
+export function formatAmount(value: number) {
+  return value.toLocaleString("en-AU", {
+    style: "currency",
+    currency: "AUD",
+    maximumFractionDigits: 2,
+  });
+}
