@@ -1,5 +1,5 @@
 <template>
-  <header class="w-full py-6 border-b border-default mb-8">
+  <header class="w-full py-6 border-b border-default">
     <div class="flex items-center justify-between w-full gap-4">
       <h1
         class="text-3xl font-bold text-highlighted tracking-tight sm:text-4xl"

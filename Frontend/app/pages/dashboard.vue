@@ -1,10 +1,15 @@
 <template>
-  <div class="w-full">
+  <div class="flex flex-col w-full space-y-6">
     <PageHeader :title="title" :description="description" :date="dateText" />
-  </div>
 
-  <div class="space-y-6">
-    <StatCards :total-spent="totalSpent" />
+    <div class="flex">
+      <StatCards
+        :total-spent="totalSpent"
+        :expense-count="expenseCount"
+        :category-count="categoryCount"
+        :avg-per-expense="avgPerExpense"
+      />
+    </div>
   </div>
 </template>
 
@@ -42,7 +47,20 @@ const monthlySheetData = computed(() => expenseStore.monthlySheetData ?? null);
 const monthlySummaryData = computed(
   () => expenseStore.monthlySummaryData ?? null,
 );
+
+/**
+ * Stat card data
+ */
 const totalSpent = computed(() => monthlySummaryData.value?.totalSpent ?? 0);
+const expenseCount = computed(() => monthlySheetData.value?.length ?? 0);
+const categoryCount = computed(
+  () =>
+    monthlySummaryData.value?.categories.filter((c) => c.amountSpent > 0)
+      .length ?? 0,
+);
+const avgPerExpense = computed(() =>
+  expenseCount.value > 0 ? totalSpent.value / expenseCount.value : 0,
+);
 
 /**
  * Category data

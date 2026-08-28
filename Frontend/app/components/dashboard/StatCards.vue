@@ -2,14 +2,13 @@
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
     <StatCard
       label="Total spent"
-      :value="formattedExpenseCount"
+      :value="String(totalSpent)"
       icon="i-heroicons-currency-dollar"
-      colour="primary"
     />
 
     <StatCard
       label="Total expenses this month"
-      :value="String(expenseCount)"
+      :value="formattedExpenseCount"
       icon="i-heroicons-receipt"
       colour="neutral"
     />
@@ -21,7 +20,7 @@
     />
     <StatCard
       label="Average per expense"
-      :value="`$${avgPerExpense}`"
+      :value="formattedAvgPerExpense"
       icon="i-heroicons-calculator"
       colour="neutral"
     />
@@ -29,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import StatCard from "./StatCard.vue";
 
 const props = defineProps<{
@@ -38,7 +38,16 @@ const props = defineProps<{
   avgPerExpense: number;
 }>();
 
-const formattedExpenseCount = props.expenseCount.toLocaleString("en-AU", {
-  minimumFractionDigits: 2,
-});
+const formattedExpenseCount = computed(() =>
+  props.expenseCount.toLocaleString("en-AU", {
+    minimumFractionDigits: 2,
+  }),
+);
+const formattedAvgPerExpense = computed(
+  () =>
+    `$${props.avgPerExpense.toLocaleString("en-AU", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`,
+);
 </script>

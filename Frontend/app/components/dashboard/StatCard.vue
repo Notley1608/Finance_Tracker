@@ -1,12 +1,12 @@
 <template>
   <div class="rounded-xl border border-default p-5 bg-white dark:bg-gray-900">
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-3 mb-1">
       <UIcon
         :name="icon"
         :class="iconClasses"
         :style="{ backgroundColor: colour }"
       />
-      <span class="text-sm text-muted">{{ label }}</span>
+      <span class="text-sm font-medium">{{ label }}</span>
     </div>
 
     <p class="text-2xl font-bold text-highlighted tabular-nums">{{ value }}</p>
