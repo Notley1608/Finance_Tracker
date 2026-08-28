@@ -18,6 +18,7 @@
         :month="selectedMonth"
         :year="selectedYear"
         @change="onMonthChange"
+        :loading="isLoading"
       />
     </div>
   </div>

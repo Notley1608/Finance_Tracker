@@ -36,7 +36,10 @@
       </div>
     </div>
 
-    <p v-if="rows.length === 0" class="text-sm text-muted py-8 text-center">
+    <p
+      v-if="rows.length === 0 || loading === true"
+      class="text-sm text-muted py-8 text-center"
+    >
       No expenses recorded for {{ monthName }}.
     </p>
 
@@ -73,6 +76,7 @@ const props = defineProps<{
   summary: MonthlySummary | null;
   month: number;
   year: number;
+  loading: boolean;
 }>();
 const emit = defineEmits<{
   (e: "change", payload: { year: number; month: number }): void;
