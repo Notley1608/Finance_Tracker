@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-full space-y-6">
+  <div class="flex flex-col w-full space-y-6 mb-6">
     <PageHeader :title="title" :description="description" :date="dateText" />
 
     <div class="flex">
@@ -8,6 +8,15 @@
         :expense-count="expenseCount"
         :category-count="categoryCount"
         :avg-per-expense="avgPerExpense"
+      />
+    </div>
+
+    <div>
+      <MonthlySpendBreakdown
+        :categories="categories ?? []"
+        :summary="monthlySummaryData"
+        :month="month"
+        :year="year"
       />
     </div>
   </div>
@@ -23,6 +32,7 @@ import { formatDate } from "~/utils";
 import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 import PageHeader from "~/components/dashboard/PageHeader.vue";
 import StatCards from "~/components/dashboard/StatCards.vue";
+import MonthlySpendBreakdown from "~/components/dashboard/MonthlySpendBreakdown.vue";
 
 definePageMeta({
   title: "Dashboard",

@@ -1,6 +1,12 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  modules: ["@nuxt/ui", "@pinia/nuxt", "@nuxt/devtools", "@nuxt/icon"],
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "@nuxt/devtools",
+    "@nuxt/icon",
+    "nuxt-charts",
+  ],
 
   pinia: {
     plugins: ["~/plugins/pinia-persist.client.ts"],
