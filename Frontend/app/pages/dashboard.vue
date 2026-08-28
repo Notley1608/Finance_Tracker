@@ -15,8 +15,9 @@
       <MonthlySpendBreakdown
         :categories="categories ?? []"
         :summary="monthlySummaryData"
-        :month="month"
-        :year="year"
+        :month="selectedMonth"
+        :year="selectedYear"
+        @change="onMonthChange"
       />
     </div>
   </div>
@@ -85,8 +86,29 @@ const title = computed(() => `Welcome back ${user.value?.name ?? ""}`);
 const description = "This is your financial overview";
 const date = new Date();
 const dateText = computed(() => `Todays date is ${formatDate(date)}`);
-const year = date.getFullYear();
-const month = date.getMonth() + 1;
+const selectedYear = ref(date.getFullYear());
+const selectedMonth = ref(date.getMonth() + 1);
+
+async function loadMonth(year: number, month: number) {
+  try {
+    await Promise.all([
+      expenseStore.getMonthlySheet(year, month),
+      expenseStore.getMonthlySummary(year, month),
+    ]);
+  } catch (err: any) {
+    toast.add({
+      title: "Failed to load data",
+      color: "error",
+    });
+    console.error(err);
+  }
+}
+
+function onMonthChange(payload: { year: number; month: number }) {
+  selectedYear.value = payload.year;
+  selectedMonth.value = payload.month;
+  loadMonth(payload.year, payload.month);
+}
 
 onMounted(async () => {
   isLoading.value = true;
@@ -94,8 +116,8 @@ onMounted(async () => {
     await Promise.all([
       userStore.getUser(),
       expenseStore.getAllExpenses(),
-      expenseStore.getMonthlySheet(year, month),
-      expenseStore.getMonthlySummary(year, month),
+      expenseStore.getMonthlySheet(selectedYear.value, selectedMonth.value),
+      expenseStore.getMonthlySummary(selectedYear.value, selectedMonth.value),
       categoryStore.getAllCategories(),
     ]);
   } catch (err: any) {

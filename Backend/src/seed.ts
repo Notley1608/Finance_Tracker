@@ -36,9 +36,9 @@ async function seed() {
 
     // 2. Seed Categories per user using real user IDs
     const categoriesToSeed = [
-      { userIndex: 2, categoryName: "Groceries" },
-      { userIndex: 2, categoryName: "Utilities" },
-      { userIndex: 2, categoryName: "Travel" },
+      { userIndex: 2, categoryName: "Groceries", colour: "#78face" },
+      { userIndex: 2, categoryName: "Utilities", colour: "#6821c7" },
+      { userIndex: 2, categoryName: "Travel", colour: "#ffffbb" },
     ];
 
     const createdCategories = new Map<
