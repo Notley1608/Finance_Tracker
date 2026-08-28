@@ -28,6 +28,7 @@ export class CategoryModel {
       id: dbRecord.id,
       name: dbRecord.name,
       userId: dbRecord.user_id,
+      colour: dbRecord.colour ?? undefined,
       expenseCount: 0,
     });
   }
@@ -36,8 +37,9 @@ export class CategoryModel {
     const records = await this.database
       .select({
         id: categorySchema.id,
-        name: categorySchema.name,
         user_id: categorySchema.user_id,
+        name: categorySchema.name,
+        colour: categorySchema.colour,
         expenseCount: count(expenseSchema.id),
       })
       .from(categorySchema)
@@ -52,6 +54,7 @@ export class CategoryModel {
         id: record.id,
         userId: record.user_id,
         name: record.name,
+        colour: record.colour ?? undefined,
         expenseCount: record.expenseCount,
       });
     });
@@ -91,6 +94,7 @@ export class CategoryModel {
   public async create(
     name: string,
     userId: string,
+    colour?: string,
   ): Promise<CategoryEntity | null> {
     const [existingCategory] = await this.database
       .select()
@@ -103,7 +107,7 @@ export class CategoryModel {
     }
     const [newCategory] = await this.database
       .insert(categorySchema)
-      .values({ id: crypto.randomUUID(), user_id: userId, name: name })
+      .values({ id: crypto.randomUUID(), user_id: userId, name: name, colour })
       .returning();
 
     if (!newCategory) return null;
@@ -112,6 +116,7 @@ export class CategoryModel {
       id: newCategory.id,
       userId: newCategory.user_id,
       name: newCategory.name,
+      colour: newCategory.colour ?? undefined,
       expenseCount: 0,
     });
   }
@@ -120,6 +125,7 @@ export class CategoryModel {
     categoryId: string,
     categoryName: string,
     userId: string,
+    colour?: string,
   ): Promise<CategoryEntity | null> {
     const [existingCategory] = await this.database
       .select()
@@ -136,12 +142,12 @@ export class CategoryModel {
 
     const duplicate = await this.findByName(userId, categoryName);
     if (duplicate && duplicate.id !== categoryId) {
-      return null; 
+      return null;
     }
 
     const [updatedRecord] = await this.database
       .update(categorySchema)
-      .set({ name: categoryName })
+      .set({ name: categoryName, ...(colour ? { colour } : {}) })
       .where(eq(categorySchema.id, categoryId))
       .returning();
     if (!updatedRecord) return null;

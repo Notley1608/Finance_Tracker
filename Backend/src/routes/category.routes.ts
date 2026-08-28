@@ -13,14 +13,16 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
   .post(
     "/",
     async ({ db, body, userId, set }) => {
-      const { categoryName } = body as {
+      const { categoryName, colour } = body as {
         categoryName: string;
+        colour?: string;
       };
 
       const newCategory = await categoryController.createCategory(
         db,
         userId,
         categoryName,
+        colour,
       );
 
       set.status = 201;
@@ -29,6 +31,7 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
     {
       body: t.Object({
         categoryName: t.String(),
+        colour: t.Optional(t.String({ pattern: "^#[0-9A-Fa-f]{6}$" })),
       }),
     },
   )
@@ -58,18 +61,23 @@ export const categoryRoutes = new Elysia({ prefix: "/categories" })
     "/:categoryId",
     async ({ db, params, body, userId }) => {
       const { categoryId } = params as { categoryId: string };
-      const { categoryName } = body as { categoryName: string };
+      const { categoryName, colour } = body as {
+        categoryName: string;
+        colour?: string;
+      };
 
       return categoryController.updateCategory(
         db,
         categoryName,
         categoryId,
         userId,
+        colour,
       );
     },
     {
       body: t.Object({
         categoryName: t.String(),
+        colour: t.Optional(t.String({ pattern: "^#[0-9A-Fa-f]{6}$" })),
       }),
       params: t.Object({
         categoryId: t.String({ format: "uuid" }),

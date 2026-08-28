@@ -7,6 +7,7 @@ export const categoryController = {
     databaseConnection: typeof db,
     userId: string,
     categoryName: string,
+    colour?: string,
   ) {
     const categoryModel = new CategoryModel(databaseConnection);
     const existingCategory = await categoryModel.findByName(
@@ -17,7 +18,11 @@ export const categoryController = {
       throw new HttpError(409, "Category name already taken");
     }
 
-    const newCategory = await categoryModel.create(categoryName, userId);
+    const newCategory = await categoryModel.create(
+      categoryName,
+      userId,
+      colour,
+    );
     if (!newCategory) {
       throw new HttpError(500, "Error creating category");
     }
@@ -51,6 +56,7 @@ export const categoryController = {
     categoryName: string,
     categoryId: string,
     userId: string,
+    colour?: string,
   ) {
     const categoryModel = new CategoryModel(databaseConnection);
     const existingCategory = await categoryModel.findById(categoryId, userId);
@@ -62,6 +68,7 @@ export const categoryController = {
       categoryId,
       categoryName,
       userId,
+      colour,
     );
     if (!updatedCategory) {
       throw new HttpError(500, "Error updating category");

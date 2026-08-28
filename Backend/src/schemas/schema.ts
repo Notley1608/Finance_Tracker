@@ -17,6 +17,7 @@ export const categorySchema = sqliteTable("categories", {
     .notNull()
     .references(() => userSchema.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
+  colour: text("colour"),
 });
 
 export type CategorySchema = typeof categorySchema.$inferSelect;
