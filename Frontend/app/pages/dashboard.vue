@@ -2,24 +2,30 @@
   <div class="flex flex-col w-full space-y-6 mb-6">
     <PageHeader :title="title" :description="description" :date="dateText" />
 
-    <div class="flex">
-      <StatCards
-        :total-spent="totalSpent"
-        :expense-count="expenseCount"
-        :category-count="categoryCount"
-        :avg-per-expense="avgPerExpense"
-      />
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-1">
+        <StatCards
+          :total-spent="totalSpent"
+          :expense-count="expenseCount"
+          :category-count="categoryCount"
+          :avg-per-expense="avgPerExpense"
+        />
+      </div>
+
+      <div class="lg:col-span-2">
+        <MonthlySpendBreakdown
+          :categories="categories ?? []"
+          :summary="monthlySummaryData"
+          :month="selectedMonth"
+          :year="selectedYear"
+          @change="onMonthChange"
+          :loading="isLoading"
+        />
+      </div>
     </div>
 
     <div>
-      <MonthlySpendBreakdown
-        :categories="categories ?? []"
-        :summary="monthlySummaryData"
-        :month="selectedMonth"
-        :year="selectedYear"
-        @change="onMonthChange"
-        :loading="isLoading"
-      />
+      <SpendTrend :expenses="expenses ?? []" :categories="categories ?? []" />
     </div>
   </div>
 </template>
@@ -35,6 +41,7 @@ import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 import PageHeader from "~/components/dashboard/PageHeader.vue";
 import StatCards from "~/components/dashboard/StatCards.vue";
 import MonthlySpendBreakdown from "~/components/dashboard/MonthlySpendBreakdown.vue";
+import SpendTrend from "~/components/dashboard/SpendTrend.vue";
 
 definePageMeta({
   title: "Dashboard",
@@ -56,11 +63,9 @@ const user = computed(() => userStore.userData ?? null);
 const expenseStore = useExpenseStore();
 const expenses = computed(() => expenseStore.expensesData ?? null);
 const monthlySheetData = computed(() => expenseStore.monthlySheetData ?? null);
-console.log(monthlySheetData);
 const monthlySummaryData = computed(
   () => expenseStore.monthlySummaryData ?? null,
 );
-console.log(monthlySummaryData);
 
 /**
  * Stat card data

@@ -3,6 +3,41 @@ import { UserModel } from "./models/user.model";
 import { CategoryModel } from "./models/category.model";
 import { ExpenseModel } from "./models/expense.model";
 
+/**
+ * Generate `count` dates spread evenly across the last `months` months,
+ * ending in the current month.
+ */
+function generateSpreadDates(count: number, months: number): Date[] {
+  const today = new Date();
+  const dates: Date[] = [];
+
+  for (let i = 0; i < count; i++) {
+    // Fairly distribute expenses across each month of the window
+    const monthSlot = Math.floor((i / count) * months); // 0..months-1
+    const offsetFromCurrent = months - 1 - monthSlot; // months back from now
+
+    let year = today.getFullYear();
+    let month = today.getMonth();
+
+    // Step back `offsetFromCurrent` months
+    for (let step = 0; step < offsetFromCurrent; step++) {
+      if (month === 0) {
+        month = 11;
+        year -= 1;
+      } else {
+        month -= 1;
+      }
+    }
+
+    // Vary the day within the month (avoid month-length issues)
+    const day = 1 + ((i * 13) % 27);
+
+    dates.push(new Date(year, month, day, 12, 0, 0, 0));
+  }
+
+  return dates;
+}
+
 async function seed() {
   const userModel = new UserModel(db);
   const categoryModel = new CategoryModel(db);
@@ -201,6 +236,13 @@ async function seed() {
       },
     ];
 
+    // Spread the fixed set of expense dates across the last 6 months
+    const spreadDates = generateSpreadDates(
+      expensesToSeed.length,
+      6,
+    );
+
+    let seedIdx = 0;
     for (const expense of expensesToSeed) {
       const user = createdUsers.find(
         (item) => item.email === expense.userEmail,
@@ -239,8 +281,9 @@ async function seed() {
         user.id,
         categoryId,
         expense.description,
-        new Date().toISOString(),
+        (spreadDates[seedIdx] ?? new Date()).toISOString(),
       );
+      seedIdx++;
 
       if (createdExpense) {
         console.log(`Inserted expense: ${expense.description}`);

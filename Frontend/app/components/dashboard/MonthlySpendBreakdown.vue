@@ -15,7 +15,7 @@
           @click="goToPrevMonth"
         />
         <span class="text-sm font-medium text-muted w-24 text-center">
-          {{ monthName }}
+          {{ monthNameText }}
         </span>
         <UButton
           icon="i-heroicons-chevron-right"
@@ -40,7 +40,7 @@
       v-if="amounts.length === 0 || loading === true"
       class="text-sm text-muted py-8 text-center"
     >
-      No expenses recorded for {{ monthName }}.
+      No expenses recorded for {{ monthNameText }}.
     </p>
 
     <ClientOnly v-else>
@@ -72,7 +72,7 @@
           :style="{ backgroundColor: biggestSegment.colour ?? colourFor(0) }"
         />
         <span class="text-sm text-muted"
-          >Biggest spend in {{ monthName }}:
+          >Biggest spend in {{ monthNameText }}:
         </span>
       </div>
       <span class="text-sm font-semibold text-highlighted">
@@ -86,8 +86,7 @@
 import { computed } from "vue";
 import type { Category } from "~/types/categories";
 import type { MonthlySummary } from "~/types/expenses";
-import { MONTH_NAMES, FALLBACK_COLOURS } from "~/consts";
-import { formatAmount } from "~/utils";
+import { colourFor, formatAmount, monthName } from "~/utils";
 
 const props = defineProps<{
   categories: Category[];
@@ -107,8 +106,8 @@ const isCurrentMonth = computed(
   () => props.year === currentYear && props.month === currentMonth,
 );
 
-const monthName = computed(
-  () => `${MONTH_NAMES[props.month - 1]} ${props.year}`,
+const monthNameText = computed(
+  () => `${monthName(props.month)} ${props.year}`,
 );
 
 function goToPrevMonth() {
@@ -125,10 +124,6 @@ function goToNextMonth() {
     "change",
     month === 12 ? { year: year + 1, month: 1 } : { year, month: month + 1 },
   );
-}
-
-function colourFor(index: number): string {
-  return FALLBACK_COLOURS[index % FALLBACK_COLOURS.length];
 }
 
 const categoryById = computed(() => {
