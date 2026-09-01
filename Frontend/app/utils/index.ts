@@ -15,8 +15,8 @@ export interface MonthInfo {
   label: string;
 }
 
-export function monthName(month: number): string | undefined {
-  return MONTH_NAMES[month - 1];
+export function monthName(month: number): string {
+  return (MONTH_NAMES[month - 1] ?? MONTH_NAMES[0] ?? "");
 }
 
 export function toMonthKey(year: number, month: number): string {
@@ -36,7 +36,7 @@ export function buildMonthWindow(
       key: toMonthKey(year, month),
       year,
       month,
-      label: `${MONTH_NAMES[month - 1]} ${year}`,
+      label: `${monthName(month)} ${year}`,
     });
 
     month -= 1;
@@ -49,8 +49,8 @@ export function buildMonthWindow(
   return window;
 }
 
-export function colourFor(index: number): string | undefined {
-  return FALLBACK_COLOURS[index % FALLBACK_COLOURS.length];
+export function colourFor(index: number): string {
+  return FALLBACK_COLOURS[index % FALLBACK_COLOURS.length] ?? "#6366f1";
 }
 
 export function formatDate(date: string | Date) {

@@ -43,13 +43,14 @@
         :data="trendData"
         :categories="trendCategories"
         :height="220"
-        :x-formatter="(i: number) => months[i]?.label ?? ''"
+        :x-formatter="(i: number) => xTickLabels.get(i) ?? ''"
+        :x-explicit-ticks="monthTickValues"
         x-label="Month"
         y-label="Amount"
         :y-formatter="(v: number) => formatAmount(v)"
         :y-grid-line="true"
         :y-axis-config="{ tickTextFontSize: '12px' }"
-        curve-type="monotone-x"
+        curve-type="monotoneX"
         :hide-legend="viewMode === 'total'"
       />
       <template #fallback>
@@ -83,18 +84,38 @@ const rangeStart = computed(() => `${months.value[0]?.key ?? ""}-01`);
 
 const viewMode = ref<"total" | "categories">("total");
 const months = computed(() =>
-  buildMonthWindow(rangeMonths[selectedRange.value]),
+  buildMonthWindow(rangeMonths[selectedRange.value] ?? 0),
 );
 
 const windowedExpenses = computed(() =>
   props.expenses.filter((e) => e.date >= rangeStart.value),
 );
 
+const isYearly = computed(
+  () => (rangeMonths[selectedRange.value] ?? 0) >= 24,
+);
+
+const xTickLabels = computed(() => {
+  const labels = new Map<number, string>();
+  months.value.forEach((m, i) => {
+    if (isYearly.value) {
+      if (m.month === 1 || i === months.value.length - 1) {
+        labels.set(i, String(m.year));
+      }
+    } else {
+      labels.set(i, m.label);
+    }
+  });
+  return labels;
+});
+
+const monthTickValues = computed(() => [...xTickLabels.value.keys()]);
+
 const totalByMonth = computed(() => {
   const sums = new Map<string, number>();
   for (const e of windowedExpenses.value) {
-    const parts = e.date.split("-").map(Number);
-    const key = toMonthKey(parts[0], parts[1]);
+    const [year, month] = e.date.split("-").map(Number);
+    const key = toMonthKey(year, month);
     sums.set(key, (sums.get(key) ?? 0) + Number(e.amount));
   }
   return months.value.map((m) => ({
@@ -110,14 +131,14 @@ const activeCategoryIds = computed(() => {
 const byCategoryByMonth = computed(() => {
   const monthly = new Map<string, Map<string, number>>();
   for (const e of windowedExpenses.value) {
-    const parts = e.date.split("-").map(Number);
-    const mkey = toMonthKey(parts[0], parts[1]);
+    const [year, month] = e.date.split("-").map(Number);
+    const mkey = toMonthKey(year, month);
     if (!monthly.has(mkey)) monthly.set(mkey, new Map());
     const cats = monthly.get(mkey)!;
     cats.set(e.categoryId, (cats.get(e.categoryId) ?? 0) + Number(e.amount));
   }
   return months.value.map((m) => {
-    const row: Record<string, number> = { month: m.key };
+    const row: Record<string, number | string> = { month: m.key };
     const cats = monthly.get(m.key);
     for (const id of activeCategoryIds.value) row[id] = cats?.get(id) ?? 0;
     return row;
