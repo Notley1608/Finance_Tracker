@@ -1,14 +1,14 @@
-FROM oven/bun:1.3-alpine AS build
+FROM node:26.5.1-alpine AS build
 
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN bun install --no-save
+RUN corepack enable && pnpm install --frozen-lockfile
 
 COPY . .
-RUN bun run build
+RUN pnpm run build
 
-FROM oven/bun:1.3-alpine
+FROM node:26.5.1-alpine
 
 WORKDIR /app
 COPY --from=build /app/.output ./.output
@@ -19,4 +19,4 @@ ENV PORT=5173
 
 EXPOSE 5173
 
-CMD ["bun", ".output/server/index.mjs"]
+CMD ["node", ".output/server/index.mjs"]
