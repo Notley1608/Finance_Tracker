@@ -1,21 +1,23 @@
 <template>
-  <ExpenseTable
-    :expenses="expenses"
-    :category-map="categoryMap"
-    :is-loading="isLoading"
-    @edit="updateExpense"
-    @delete="deleteExpense"
-  >
-    <template #toolbar>
-      <UButton @click="createExpense">Add expense</UButton>
-    </template>
-  </ExpenseTable>
-  <ExpenseModal
-    ref="expenseModal"
-    :category-map="categoryMap"
-    @submit="handleSubmit"
-    @cancel="cancelEdit"
-  />
+  <div>
+    <ExpenseTable
+      :expenses="expenses"
+      :category-map="categoryMap"
+      :is-loading="isLoading"
+      @edit="updateExpense"
+      @delete="deleteExpense"
+    >
+      <template #toolbar>
+        <UButton @click="createExpense">Add expense</UButton>
+      </template>
+    </ExpenseTable>
+    <ExpenseModal
+      ref="expenseModal"
+      :category-map="categoryMap"
+      @submit="handleSubmit"
+      @cancel="cancelEdit"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -126,7 +128,7 @@ onMounted(async () => {
       expenseStore.getAllExpenses(),
       categoryStore.getAllCategories(),
     ]);
-  } catch (err: any) {
+  } catch {
     toast.add({
       title: "Failed to load expenses",
       color: "error",

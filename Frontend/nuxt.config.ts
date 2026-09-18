@@ -8,10 +8,6 @@ export default defineNuxtConfig({
     "nuxt-charts",
   ],
 
-  pinia: {
-    plugins: ["~/plugins/pinia-persist.client.ts"],
-  },
-
   imports: {
     autoImport: true,
   },

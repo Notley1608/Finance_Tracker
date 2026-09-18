@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { expenseSchema, type ExpenseSchema } from "../schemas/schema";
 import { ExpenseEntity } from "../entities/expense.entity";
-import { and, eq, gte, lt, sum, sql } from "drizzle-orm";
+import { and, eq, gte, lt, sum } from "drizzle-orm";
 
 export class ExpenseModel {
   /**methods

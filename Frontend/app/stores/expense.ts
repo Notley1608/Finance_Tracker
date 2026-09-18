@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Expense, ExpensePayload, MonthlySummary } from "~/types/expenses";
 import { useExpensesApi } from "~/api/modules/expenses";
+import { getErrorMessage } from "~/utils";
 
 export const useExpenseStore = defineStore("expense", () => {
   const expensesApi = useExpensesApi();
@@ -20,7 +21,7 @@ export const useExpenseStore = defineStore("expense", () => {
   const monthlySheetData = ref<Expense[] | null>(null);
   const monthlySummaryData = ref<MonthlySummary | null>(null);
   const isLoading = ref(false);
-  const error = ref(null);
+  const error = ref<string | null>(null);
 
   function resetState(): void {
     expensesData.value = null;
@@ -38,8 +39,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.getAllExpenses();
       expensesData.value = response || null;
       return expensesData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to load expenses";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to load expenses";
       throw err;
     } finally {
       isLoading.value = false;
@@ -56,8 +57,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.createExpense(payload);
       expenseData.value = response || null;
       return expenseData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to create expenses";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to create expenses";
       throw err;
     } finally {
       isLoading.value = false;
@@ -72,8 +73,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.getExpense(expenseId);
       expenseData.value = response || null;
       return expenseData.value;
-    } catch (err: any) {
-      error.value = err.message || "Error getting expense";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error getting expense";
       throw err;
     } finally {
       isLoading.value = false;
@@ -91,8 +92,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.updateExpense(expenseId, payload);
       expenseData.value = response || null;
       return expenseData.value;
-    } catch (err: any) {
-      error.value = err.message || "Error updating expense";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error updating expense";
       throw err;
     } finally {
       isLoading.value = false;
@@ -105,8 +106,8 @@ export const useExpenseStore = defineStore("expense", () => {
 
     try {
       await expensesApi.deleteExpense(expenseId);
-    } catch (err: any) {
-      error.value = err.message || "Error deleting expense";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error deleting expense";
       throw err;
     } finally {
       resetState();
@@ -125,8 +126,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.getMonthlySheet(year, month);
       monthlySheetData.value = response || null;
       return monthlySheetData.value;
-    } catch (err: any) {
-      error.value = err.message || "Error getting monthly sheet";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error getting monthly sheet";
       throw err;
     } finally {
       isLoading.value = false;
@@ -144,8 +145,8 @@ export const useExpenseStore = defineStore("expense", () => {
       const response = await expensesApi.getMonthlySummary(year, month);
       monthlySummaryData.value = response || null;
       return monthlySummaryData.value;
-    } catch (err: any) {
-      error.value = err.message || "Error getting monthly summary";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error getting monthly summary";
       throw err;
     } finally {
       isLoading.value = false;
@@ -163,8 +164,8 @@ export const useExpenseStore = defineStore("expense", () => {
     try {
       const response = await expensesApi.exportData(year, month, format);
       return response;
-    } catch (err: any) {
-      error.value = err.message || "Error exporting data";
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Error exporting data";
       throw err;
     } finally {
       isLoading.value = false;

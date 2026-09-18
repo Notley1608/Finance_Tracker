@@ -25,7 +25,7 @@ definePageMeta({
 const userStore = useUserStore();
 const toast = useToast();
 
-const fields = <AuthFormField[]>[
+const fields: AuthFormField[] = [
   {
     name: "email",
     type: "email",

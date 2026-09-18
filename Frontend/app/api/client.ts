@@ -4,8 +4,8 @@ import { useExpenseStore } from "~/stores/expense";
 import { useCategoryStore } from "~/stores/category";
 
 export interface ApiOptions extends Omit<RequestInit, "body"> {
-  body?: any;
-  query?: Record<string, any>;
+  body?: unknown;
+  query?: Record<string, unknown>;
 }
 
 export const createApiClient = () => {

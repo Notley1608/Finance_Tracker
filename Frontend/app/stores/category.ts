@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Category } from "~/types/categories";
 import { useCategoriesApi } from "~/api/modules/categories";
+import { getErrorMessage } from "~/utils";
 
 export const useCategoryStore = defineStore("category", () => {
   const categoriesApi = useCategoriesApi();
@@ -12,7 +13,7 @@ export const useCategoryStore = defineStore("category", () => {
   const categoriesData = ref<Category[] | null>(null);
   const categoryData = ref<Category | null>(null);
   const isLoading = ref(false);
-  const error = ref(null);
+  const error = ref<string | null>(null);
 
   function resetState(): void {
     categoriesData.value = null;
@@ -28,9 +29,9 @@ export const useCategoryStore = defineStore("category", () => {
       const response = await categoriesApi.getAllCategories();
       categoriesData.value = response || null;
       return categoriesData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to load categories";
-      throw error;
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to load categories";
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -44,9 +45,9 @@ export const useCategoryStore = defineStore("category", () => {
       const response = await categoriesApi.getCategory(categoryId);
       categoryData.value = response || null;
       return categoryData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to load category";
-      throw error;
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to load category";
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -62,9 +63,9 @@ export const useCategoryStore = defineStore("category", () => {
       const response = await categoriesApi.createCategory(categoryName);
       categoryData.value = response || null;
       return categoryData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to create category";
-      throw error;
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to create category";
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -84,9 +85,9 @@ export const useCategoryStore = defineStore("category", () => {
       );
       categoryData.value = response || null;
       return categoryData.value;
-    } catch (err: any) {
-      error.value = err?.message || "Failed to update category";
-      throw error;
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to update category";
+      throw err;
     } finally {
       isLoading.value = false;
     }
@@ -98,9 +99,9 @@ export const useCategoryStore = defineStore("category", () => {
 
     try {
       await categoriesApi.deleteCategory(categoryId);
-    } catch (err: any) {
-      error.value = err?.message || "Failed to delete category";
-      throw error;
+    } catch (err) {
+      error.value = getErrorMessage(err) || "Failed to delete category";
+      throw err;
     } finally {
       resetState();
       isLoading.value = false;

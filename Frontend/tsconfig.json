@@ -1,6 +1,5 @@
 {
   "extends": "./.nuxt/tsconfig.json",
-  "include": ["nuxt.config.ts", "env.d.ts", "**/*.ts", "**/*.vue"],
   "compilerOptions": {
     "types": ["vite/client"]
   }

@@ -50,7 +50,7 @@
         :y-formatter="(v: number) => formatAmount(v)"
         :y-grid-line="true"
         :y-axis-config="{ tickTextFontSize: '12px' }"
-        curve-type="monotoneX"
+        :curve-type="CurveType.MonotoneY"
         :hide-legend="viewMode === 'total'"
       />
       <template #fallback>
@@ -114,7 +114,7 @@ const monthTickValues = computed(() => [...xTickLabels.value.keys()]);
 const totalByMonth = computed(() => {
   const sums = new Map<string, number>();
   for (const e of windowedExpenses.value) {
-    const [year, month] = e.date.split("-").map(Number);
+    const [year = 0, month = 0] = e.date.split("-").map(Number);
     const key = toMonthKey(year, month);
     sums.set(key, (sums.get(key) ?? 0) + Number(e.amount));
   }
@@ -131,7 +131,7 @@ const activeCategoryIds = computed(() => {
 const byCategoryByMonth = computed(() => {
   const monthly = new Map<string, Map<string, number>>();
   for (const e of windowedExpenses.value) {
-    const [year, month] = e.date.split("-").map(Number);
+    const [year = 0, month = 0] = e.date.split("-").map(Number);
     const mkey = toMonthKey(year, month);
     if (!monthly.has(mkey)) monthly.set(mkey, new Map());
     const cats = monthly.get(mkey)!;

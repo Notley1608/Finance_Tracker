@@ -87,7 +87,7 @@
 
         <template #category-cell="{ row }">
           <UBadge color="neutral" variant="subtle" size="sm">
-            {{ row.original.category }}
+            {{ getCategoryName(row.original) }}
           </UBadge>
         </template>
 
@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { Expense } from "~/types/expenses";
-import type { TableColumn } from "@nuxt/ui";
+import type { DropdownMenuItem, TableColumn } from "@nuxt/ui";
 import { formatDate } from "~/utils/index.ts";
 import { useExpenses } from "~/composables/useExpenses";
 
@@ -160,6 +160,10 @@ const mappedExpenses = computed(
       category: props.categoryMap[expense.categoryId] ?? "Unknown",
     })) ?? [],
 );
+
+function getCategoryName(expense: Expense): string {
+  return props.categoryMap[expense.categoryId] ?? "Unknown";
+}
 
 const filteredExpenses = computed(() => filterExpenses(mappedExpenses.value));
 
@@ -272,7 +276,7 @@ const columns: TableColumn<Expense>[] = [
   },
 ];
 
-function getRowItem(row: Expense) {
+function getRowItem(row: Expense): DropdownMenuItem[] {
   return [
     {
       type: "label",

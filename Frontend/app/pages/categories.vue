@@ -48,7 +48,7 @@ const createCategory = async () => {
     await categoryStore.createCategory(name.trim());
     toast.add({ title: "Category created", color: "success" });
     await categoryStore.getAllCategories();
-  } catch (error) {
+  } catch {
     toast.add({ title: "Error creating category", color: "error" });
   }
 };
@@ -106,7 +106,7 @@ onMounted(async () => {
 
   try {
     await Promise.all([categoryStore.getAllCategories()]);
-  } catch (err: any) {
+  } catch {
     toast.add({
       title: "Failed to load categories",
       color: "error",

@@ -30,7 +30,7 @@
             </UFormField>
 
             <UFormField label="date">
-              <UInput type="date" v-model="state.date" />
+              <UInput v-model="state.date" type="date" />
             </UFormField>
 
             <div class="mb-5">
@@ -49,7 +49,7 @@ import { ref, reactive } from "vue";
 import * as z from "zod";
 import type { Expense, ExpensePayload } from "~/types/expenses";
 
-const props = defineProps<{
+defineProps<{
   categoryMap: Record<string, string>;
 }>();
 

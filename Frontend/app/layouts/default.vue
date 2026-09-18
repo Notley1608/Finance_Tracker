@@ -1,5 +1,5 @@
 <template>
-  <div class="app-shell min-h-screen flex flex-col">
+  <div class="app-shell">
     <AppHeader
       :page-title="pageTitle"
       :sidebar-open="isSidebarOpen"
@@ -7,7 +7,7 @@
     />
 
     <div
-      class="flex-1 transition-all duration-300"
+      class="flex-1 transition-all duration-300 min-h-screen flex flex-col"
       :class="isSidebarOpen ? 'ml-64' : 'ml-0'"
     >
       <AppMain />
@@ -15,8 +15,8 @@
       <AppSidebar v-model:open="isSidebarOpen" />
     </div>
     <AppFooter />
+    <ProfileModal ref="profileModal" />
   </div>
-  <ProfileModal ref="profileModal" />
 </template>
 
 <script setup lang="ts">

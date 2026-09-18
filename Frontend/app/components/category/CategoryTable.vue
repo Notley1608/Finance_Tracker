@@ -55,7 +55,7 @@
             "
             @keyup.escape="emit('cancel')"
           />
-          <span class="font-medium text-highlighted" v-else>
+          <span v-else class="font-medium text-highlighted">
             {{ row.original.name }}
           </span>
         </template>
@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue";
 import type { Category } from "~/types/categories";
-import type { TableColumn } from "@nuxt/ui";
+import type { DropdownMenuItem, TableColumn } from "@nuxt/ui";
 import { useCategories } from "~/composables/useCategories";
 
 const props = defineProps<{
@@ -138,7 +138,7 @@ const filteredCategories = computed(() =>
  * Actions
  */
 const editingCategory = ref("");
-const editInput = ref<InstanceType<any>>(null);
+const editInput = ref<{ inputRef?: { focus: () => void } } | null>(null);
 
 watch(
   () => props.editingId,
@@ -245,7 +245,7 @@ const columns: TableColumn<Category>[] = [
   },
 ];
 
-function getRowItem(row: Category) {
+function getRowItem(row: Category): DropdownMenuItem[] {
   return [
     {
       type: "label",

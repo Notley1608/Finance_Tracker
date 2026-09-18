@@ -18,8 +18,8 @@
           :summary="monthlySummaryData"
           :month="selectedMonth"
           :year="selectedYear"
-          @change="onMonthChange"
           :loading="isLoading"
+          @change="onMonthChange"
         />
       </div>
     </div>
@@ -103,7 +103,7 @@ async function loadMonth(year: number, month: number) {
       expenseStore.getMonthlySheet(year, month),
       expenseStore.getMonthlySummary(year, month),
     ]);
-  } catch (err: any) {
+  } catch (err) {
     toast.add({
       title: "Failed to load data",
       color: "error",
@@ -128,7 +128,7 @@ onMounted(async () => {
       expenseStore.getMonthlySummary(selectedYear.value, selectedMonth.value),
       categoryStore.getAllCategories(),
     ]);
-  } catch (err: any) {
+  } catch (err) {
     toast.add({
       title: "Failed to load data",
       color: "error",

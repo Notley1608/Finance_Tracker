@@ -13,14 +13,14 @@
 
           <UForm :state="state" :schema="schema" class="space-y-4">
             <UFormField label="Name">
-              <UInput v-model="state.name" v-if="isEditing" />
+              <UInput v-if="isEditing" v-model="state.name" />
               <span v-else class="block py-1.5 text-sm text-slate-700">
                 {{ state.name }}
               </span>
             </UFormField>
 
             <UFormField label="Email">
-              <UInput v-model="state.email" v-if="isEditing" />
+              <UInput v-if="isEditing" v-model="state.email" />
               <span v-else class="block py-1.5 text-sm text-slate-700">
                 {{ state.email }}
               </span>
@@ -46,8 +46,8 @@
         <section class="border-t border-black/10 pt-5 mb-5">
           <UForm
             :state="passwordForm"
-            @submit="changePassword"
             class="space-y-4"
+            @submit="changePassword"
           >
             <UFormField label="Password">
               <div v-if="!showPasswordForm" class="flex items-center">

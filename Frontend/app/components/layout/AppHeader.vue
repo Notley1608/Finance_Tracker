@@ -26,7 +26,7 @@
 <script lang="ts" setup>
 import { inject } from "vue";
 import type { Ref } from "vue";
-import ProfileModal from "~/components/modals/ProfileModal.vue";
+import type ProfileModal from "~/components/modals/ProfileModal.vue";
 
 const profileModal =
   inject<Ref<InstanceType<typeof ProfileModal> | null>>("profileModal");

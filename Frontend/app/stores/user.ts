@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import type { User, authPayload, updateUserPayload } from "~/types/users";
 import { useUsersApi } from "~/api/modules/users";
+import { getErrorMessage } from "~/utils";
 
 export const useUserStore = defineStore(
   "user",
@@ -18,7 +19,7 @@ export const useUserStore = defineStore(
     const userData = ref<User | null>(null);
     const token = ref<string | null>(null);
     const isLoading = ref(false);
-    const error = ref(null);
+    const error = ref<string | null>(null);
 
     const isAuthenticated = computed<boolean>(() => !!token.value);
 
@@ -44,8 +45,8 @@ export const useUserStore = defineStore(
         setToken(response.token);
         userData.value = response.user || null;
         return userData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error logging into account";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error logging into account";
         throw err;
       } finally {
         isLoading.value = false;
@@ -58,8 +59,8 @@ export const useUserStore = defineStore(
 
       try {
         await usersApi.logout();
-      } catch (err: any) {
-        error.value = err.message || "Error logging out";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error logging out";
         throw err;
       } finally {
         resetState();
@@ -79,8 +80,8 @@ export const useUserStore = defineStore(
         setToken(response.token);
         userData.value = response.user || null;
         return userData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error registering account";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error registering account";
         throw err;
       } finally {
         isLoading.value = false;
@@ -98,8 +99,8 @@ export const useUserStore = defineStore(
         }
         userData.value = response || null;
         return userData.value;
-      } catch (err: any) {
-        error.value = err.message || "Error getting user";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error getting user";
         throw err;
       } finally {
         isLoading.value = false;
@@ -116,8 +117,8 @@ export const useUserStore = defineStore(
           throw new Error("Invalid credential");
         }
         userData.value = response || null;
-      } catch (err: any) {
-        error.value = err.message || "Error updating user";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error updating user";
         throw err;
       } finally {
         isLoading.value = false;
@@ -131,8 +132,8 @@ export const useUserStore = defineStore(
       try {
         const response = await usersApi.deleteUser(email);
         return response.success;
-      } catch (err: any) {
-        error.value = err.message || "Error deleting user";
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error deleting user";
         throw err;
       } finally {
         resetState();
