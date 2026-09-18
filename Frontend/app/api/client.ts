@@ -12,7 +12,10 @@ export interface ApiClientOptions extends Omit<FetchOptions, "body"> {
 /** Backwards-compatible alias so callers can import `ApiClientRequest`. */
 export type ApiClientRequest = ApiClientOptions;
 
-export type ApiClient = <T>(url: string, options?: ApiClientOptions) => Promise<T>;
+export type ApiClient = <T>(
+  url: string,
+  options?: ApiClientOptions,
+) => Promise<T>;
 
 /**
  * Auth-related endpoints must never trigger the refresh-token retry loop;
@@ -38,9 +41,7 @@ function getBaseUrl(): string {
   const baseURL = config.public.apiBaseUrl as string;
 
   if (!baseURL) {
-    throw new Error(
-      "API base URL is missing. Check NUXT_PUBLIC_API_BASE_URL",
-    );
+    throw new Error("API base URL is missing. Check NUXT_PUBLIC_API_BASE_URL");
   }
 
   return baseURL;
@@ -85,6 +86,7 @@ async function performRefresh(baseURL: string): Promise<string | null> {
     userStore.setTokens(response.accessToken, response.refreshToken);
     return response.accessToken;
   } catch (error) {
+    console.error("Failed to refresh access token:", error);
     hardReset();
     return null;
   }
@@ -128,7 +130,7 @@ export function createApiClient(): ApiClient {
           ...rest,
           baseURL,
           responseType: "json" as const,
-          body: body as Record<string, any> | BodyInit | null | undefined,
+          body: body as Record<string, unknown> | BodyInit | null | undefined,
           query,
           headers: nextHeaders,
         });

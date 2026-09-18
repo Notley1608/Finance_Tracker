@@ -1,7 +1,4 @@
-import {
-  createApiClient,
-  type ApiClientRequest,
-} from "~/api/client";
+import { createApiClient } from "~/api/client";
 import type {
   AuthResponse,
   User,
@@ -60,7 +57,9 @@ export function useUsersApi() {
     /**
      * Request a password reset email
      */
-    forgotPassword(payload: ForgotPasswordPayload): Promise<{ success: boolean }> {
+    forgotPassword(
+      payload: ForgotPasswordPayload,
+    ): Promise<{ success: boolean }> {
       return apiClient<{ success: boolean }>("/users/forgot-password", {
         method: "POST",
         body: payload,
@@ -70,7 +69,9 @@ export function useUsersApi() {
     /**
      * Reset password using token from the reset email
      */
-    resetPassword(payload: ResetPasswordPayload): Promise<{ success: boolean }> {
+    resetPassword(
+      payload: ResetPasswordPayload,
+    ): Promise<{ success: boolean }> {
       return apiClient<{ success: boolean }>("/users/reset-password", {
         method: "POST",
         body: payload,
@@ -81,7 +82,7 @@ export function useUsersApi() {
      * Get user by ID
      */
     getUser(): Promise<User> {
-      return apiClient<User>('/users/me', {
+      return apiClient<User>("/users/me", {
         method: "GET",
       });
     },
@@ -90,7 +91,7 @@ export function useUsersApi() {
      * Update user
      */
     updateUser(payload: updateUserPayload): Promise<User> {
-      return apiClient<User>('/users/me', {
+      return apiClient<User>("/users/me", {
         method: "PATCH",
         body: payload,
       });
@@ -100,7 +101,7 @@ export function useUsersApi() {
      * Delete user
      */
     deleteUser(email: string): Promise<{ success: boolean }> {
-      return apiClient<{ success: boolean }>('/users/me', {
+      return apiClient<{ success: boolean }>("/users/me", {
         method: "DELETE",
         body: { userEmail: email },
       });
