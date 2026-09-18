@@ -6,6 +6,7 @@ import { userRoutes } from "./routes/user.routes";
 import { categoryRoutes } from "./routes/category.routes";
 import { expenseRoutes } from "./routes/expense.routes";
 import { budgetRoutes } from "./routes/budget.routes";
+import { importRoutes } from "./routes/import.routes";
 
 const app = new Elysia()
   .onError(({ error, set }) => {
@@ -27,6 +28,7 @@ const app = new Elysia()
   .use(categoryRoutes)
   .use(expenseRoutes)
   .use(budgetRoutes)
+  .use(importRoutes)
 
   .get("/", () => ({
     success: true,

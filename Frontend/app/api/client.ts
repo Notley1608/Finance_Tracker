@@ -116,8 +116,10 @@ export function createApiClient(): ApiClient {
       isRetry: boolean,
     ): Promise<T> => {
       const nextHeaders: Record<string, string> = {
-        "Content-Type": "application/json",
         Accept: "application/json",
+        ...(body instanceof FormData
+          ? {}
+          : { "Content-Type": "application/json" }),
         ...(headers as Record<string, string>),
       };
 

@@ -8,6 +8,9 @@
       @delete="deleteExpense"
     >
       <template #toolbar>
+        <UButton variant="outline" @click="openReceiptModal">
+          Read receipt
+        </UButton>
         <UButton @click="createExpense">Add expense</UButton>
       </template>
     </ExpenseTable>
@@ -16,6 +19,11 @@
       :category-map="categoryMap"
       @submit="handleSubmit"
       @cancel="cancelEdit"
+    />
+    <ReceiptModal
+      ref="receiptModal"
+      :category-map="categoryMap"
+      @submit="handleReceiptSubmit"
     />
   </div>
 </template>
@@ -27,6 +35,7 @@ import { useToast } from "@nuxt/ui/runtime/composables/useToast.js";
 import { ref, computed, onMounted } from "vue";
 import ExpenseTable from "~/components/expense/ExpenseTable.vue";
 import ExpenseModal from "~/components/expense/ExpenseModal.vue";
+import ReceiptModal from "~/components/expense/ReceiptModal.vue";
 import type { Expense, ExpensePayload } from "~/types/expenses";
 import { definePageMeta } from "#imports";
 
@@ -43,6 +52,7 @@ const toast = useToast();
 const expenses = computed(() => expenseStore.expensesData ?? []);
 const editingExpenseId = ref<string | null>(null);
 const expenseModal = ref<InstanceType<typeof ExpenseModal>>();
+const receiptModal = ref<InstanceType<typeof ReceiptModal>>();
 
 const isLoading = ref(false);
 
@@ -61,6 +71,32 @@ const updateExpense = (expense: Expense) => {
 const createExpense = async () => {
   editingExpenseId.value = null;
   expenseModal.value?.open();
+};
+
+const openReceiptModal = () => {
+  receiptModal.value?.open();
+};
+
+const handleReceiptSubmit = async (payloads: ExpensePayload[]) => {
+  try {
+    for (const payload of payloads) {
+      await expenseStore.createExpense(payload);
+    }
+
+    receiptModal.value?.close();
+    toast.add({
+      title: `${payloads.length} expense${payloads.length === 1 ? "" : "s"} created`,
+      color: "success",
+    });
+
+    await expenseStore.getAllExpenses();
+  } catch (error) {
+    console.error("Failed to save receipt expenses:", error);
+    toast.add({
+      title: "Error saving receipt expenses",
+      color: "error",
+    });
+  }
 };
 
 const handleSubmit = async (payload: ExpensePayload) => {
