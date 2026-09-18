@@ -36,8 +36,20 @@ export const useExpenseStore = defineStore("expense", () => {
     error.value = null;
 
     try {
-      const response = await expensesApi.getAllExpenses();
-      expensesData.value = response || null;
+      const firstPage = await expensesApi.getAllExpenses();
+      const allItems: Expense[] = [...(firstPage?.items ?? [])];
+      const pageSize = firstPage?.pageSize ?? 100;
+      const totalPages = Math.max(
+        1,
+        Math.ceil((firstPage?.total ?? allItems.length) / pageSize),
+      );
+
+      for (let page = 2; page <= totalPages; page += 1) {
+        const next = await expensesApi.getAllExpenses(undefined, page, pageSize);
+        allItems.push(...(next?.items ?? []));
+      }
+
+      expensesData.value = allItems;
       return expensesData.value;
     } catch (err) {
       error.value = getErrorMessage(err) || "Failed to load expenses";
@@ -46,7 +58,6 @@ export const useExpenseStore = defineStore("expense", () => {
       isLoading.value = false;
     }
   }
-
   async function createExpense(
     payload: ExpensePayload,
   ): Promise<Expense | null> {

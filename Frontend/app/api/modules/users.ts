@@ -1,11 +1,15 @@
+import {
+  createApiClient,
+  type ApiClientRequest,
+} from "~/api/client";
 import type {
+  AuthResponse,
   User,
   authPayload,
   updateUserPayload,
-  AuthResponse,
+  ForgotPasswordPayload,
+  ResetPasswordPayload,
 } from "~/types/users";
-
-import { createApiClient } from "~/api/client";
 
 export function useUsersApi() {
   const apiClient = createApiClient();
@@ -22,11 +26,24 @@ export function useUsersApi() {
     },
 
     /**
-     * Logout user
+     * Refresh access + refresh tokens. Refresh token rotation is handled
+     * automatically by the client on 401; this is only used directly for the
+     * initial token exchange.
      */
-    logout(): Promise<{ success: boolean }> {
+    refresh(refreshToken: string): Promise<AuthResponse> {
+      return apiClient<AuthResponse>("/users/refresh", {
+        method: "POST",
+        body: { refreshToken },
+      });
+    },
+
+    /**
+     * Logout user (revokes refresh token server-side)
+     */
+    logout(refreshToken: string): Promise<{ success: boolean }> {
       return apiClient<{ success: boolean }>("/users/logout", {
         method: "POST",
+        body: { refreshToken },
       });
     },
 
@@ -35,6 +52,26 @@ export function useUsersApi() {
      */
     register(payload: authPayload): Promise<AuthResponse> {
       return apiClient<AuthResponse>("/users/register", {
+        method: "POST",
+        body: payload,
+      });
+    },
+
+    /**
+     * Request a password reset email
+     */
+    forgotPassword(payload: ForgotPasswordPayload): Promise<{ success: boolean }> {
+      return apiClient<{ success: boolean }>("/users/forgot-password", {
+        method: "POST",
+        body: payload,
+      });
+    },
+
+    /**
+     * Reset password using token from the reset email
+     */
+    resetPassword(payload: ResetPasswordPayload): Promise<{ success: boolean }> {
+      return apiClient<{ success: boolean }>("/users/reset-password", {
         method: "POST",
         body: payload,
       });

@@ -1,4 +1,10 @@
-import type { Expense, ExpensePayload, MonthlySummary } from "~/types/expenses";
+import type {
+  Expense,
+  ExpenseFilters,
+  ExpensePayload,
+  MonthlySummary,
+  PagedExpenses,
+} from "~/types/expenses";
 import { createApiClient } from "~/api/client";
 
 export function useExpensesApi() {
@@ -22,9 +28,14 @@ export function useExpensesApi() {
         body: payload,
       });
     },
-    getAllExpenses(): Promise<Expense[]> {
-      return apiClient<Expense[]>("/expenses", {
+    getAllExpenses(
+      filters?: ExpenseFilters,
+      page = 1,
+      pageSize = 100,
+    ): Promise<PagedExpenses> {
+      return apiClient<PagedExpenses>("/expenses", {
         method: "GET",
+        query: { ...(filters ?? {}), page, pageSize },
       });
     },
     getMonthlySheet(year: number, month: number): Promise<Expense[]> {

@@ -136,11 +136,14 @@ const segments = computed(() => {
   const byId = categoryById.value;
   return (props.summary?.categories ?? [])
     .filter((c) => c.amountSpent > 0)
-    .map((c) => ({
-      name: byId.get(c.categoryId)?.name ?? "Deleted category",
-      colour: byId.get(c.categoryId)?.colour,
-      amount: c.amountSpent,
-    }));
+    .map((c) => {
+      const category = c.categoryId ? byId.get(c.categoryId) : undefined;
+      return {
+        name: category?.name ?? "Uncategorized",
+        colour: category?.colour,
+        amount: c.amountSpent,
+      };
+    });
 });
 
 const biggestSegment = computed(

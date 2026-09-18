@@ -135,7 +135,8 @@ const byCategoryByMonth = computed(() => {
     const mkey = toMonthKey(year, month);
     if (!monthly.has(mkey)) monthly.set(mkey, new Map());
     const cats = monthly.get(mkey)!;
-    cats.set(e.categoryId, (cats.get(e.categoryId) ?? 0) + Number(e.amount));
+    const ckey = e.categoryId ?? "";
+    cats.set(ckey, (cats.get(ckey) ?? 0) + Number(e.amount));
   }
   return months.value.map((m) => {
     const row: Record<string, number | string> = { month: m.key };

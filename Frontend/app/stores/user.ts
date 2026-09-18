@@ -18,18 +18,20 @@ export const useUserStore = defineStore(
      */
     const userData = ref<User | null>(null);
     const token = ref<string | null>(null);
+    const refreshToken = ref<string | null>(null);
     const isLoading = ref(false);
     const error = ref<string | null>(null);
 
     const isAuthenticated = computed<boolean>(() => !!token.value);
 
-    function setToken(newToken: string | null) {
-      token.value = newToken;
+    function setTokens(accessToken: string | null, nextRefreshToken: string | null) {
+      token.value = accessToken;
+      refreshToken.value = nextRefreshToken;
     }
 
     function resetState(): void {
       userData.value = null;
-      setToken(null);
+      setTokens(null, null);
       error.value = null;
     }
 
@@ -39,14 +41,34 @@ export const useUserStore = defineStore(
 
       try {
         const response = await usersApi.login(payload);
-        if (!response || !response.token) {
+        if (!response || !response.accessToken) {
           throw new Error("Invalid credentials");
         }
-        setToken(response.token);
+        setTokens(response.accessToken, response.refreshToken || null);
         userData.value = response.user || null;
         return userData.value;
       } catch (err) {
         error.value = getErrorMessage(err) || "Error logging into account";
+        throw err;
+      } finally {
+        isLoading.value = false;
+      }
+    }
+
+    async function register(payload: authPayload): Promise<User | null> {
+      isLoading.value = true;
+      error.value = null;
+
+      try {
+        const response = await usersApi.register(payload);
+        if (!response || !response.accessToken) {
+          throw new Error("Invalid credentials");
+        }
+        setTokens(response.accessToken, response.refreshToken || null);
+        userData.value = response.user || null;
+        return userData.value;
+      } catch (err) {
+        error.value = getErrorMessage(err) || "Error registering account";
         throw err;
       } finally {
         isLoading.value = false;
@@ -58,32 +80,15 @@ export const useUserStore = defineStore(
       error.value = null;
 
       try {
-        await usersApi.logout();
+        const currentRefreshToken = refreshToken.value;
+        if (currentRefreshToken) {
+          await usersApi.logout(currentRefreshToken);
+        }
       } catch (err) {
         error.value = getErrorMessage(err) || "Error logging out";
         throw err;
       } finally {
         resetState();
-        isLoading.value = false;
-      }
-    }
-
-    async function register(payload: authPayload): Promise<User | null> {
-      isLoading.value = true;
-      error.value = null;
-
-      try {
-        const response = await usersApi.register(payload);
-        if (!response || !response.token) {
-          throw new Error("Invalid credentials");
-        }
-        setToken(response.token);
-        userData.value = response.user || null;
-        return userData.value;
-      } catch (err) {
-        error.value = getErrorMessage(err) || "Error registering account";
-        throw err;
-      } finally {
         isLoading.value = false;
       }
     }
@@ -114,7 +119,7 @@ export const useUserStore = defineStore(
       try {
         const response = await usersApi.updateUser(payload);
         if (!response) {
-          throw new Error("Invalid credential");
+          throw new Error("Invalid credentials");
         }
         userData.value = response || null;
       } catch (err) {
@@ -144,9 +149,11 @@ export const useUserStore = defineStore(
     return {
       userData,
       token,
+      refreshToken,
       isLoading,
       error,
       isAuthenticated,
+      setTokens,
       resetState,
       login,
       logout,
@@ -158,7 +165,7 @@ export const useUserStore = defineStore(
   },
   {
     persist: {
-      pick: ["userData", "token"],
+      pick: ["userData", "token", "refreshToken"],
     },
   },
 );

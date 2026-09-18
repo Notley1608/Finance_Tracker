@@ -63,7 +63,7 @@ const open = (expense?: Expense) => {
   if (expense) {
     state.description = expense.description;
     state.amount = expense.amount;
-    state.categoryId = expense.categoryId;
+    state.categoryId = expense.categoryId ?? "";
     state.date = expense.date;
   } else {
     resetState();
@@ -105,7 +105,7 @@ const resetState = () => {
   if (editingExpense.value) {
     state.description = editingExpense.value.description;
     state.amount = editingExpense.value.amount;
-    state.categoryId = editingExpense.value.categoryId;
+    state.categoryId = editingExpense.value.categoryId ?? "";
     state.date = editingExpense.value.date;
   } else {
     state.description = "";

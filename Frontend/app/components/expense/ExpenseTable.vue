@@ -157,12 +157,16 @@ const mappedExpenses = computed(
   () =>
     props.expenses?.map((expense) => ({
       ...expense,
-      category: props.categoryMap[expense.categoryId] ?? "Unknown",
+      category: expense.categoryId
+        ? props.categoryMap[expense.categoryId] ?? "Unknown"
+        : undefined,
     })) ?? [],
 );
 
 function getCategoryName(expense: Expense): string {
-  return props.categoryMap[expense.categoryId] ?? "Unknown";
+  return expense.categoryId
+    ? props.categoryMap[expense.categoryId] ?? "Unknown"
+    : "";
 }
 
 const filteredExpenses = computed(() => filterExpenses(mappedExpenses.value));

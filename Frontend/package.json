@@ -34,7 +34,8 @@
     "@nuxt/kit": "^4.5.0",
     "typescript": "^5.9.3",
     "vitest": "^5.0.1",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.11",
+    "vite": "8.2.0"
   },
   "engines": {
     "node": "26.5.1"

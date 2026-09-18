@@ -74,8 +74,9 @@ const totalSpent = computed(() => monthlySummaryData.value?.totalSpent ?? 0);
 const expenseCount = computed(() => monthlySheetData.value?.length ?? 0);
 const categoryCount = computed(
   () =>
-    monthlySummaryData.value?.categories.filter((c) => c.amountSpent > 0)
-      .length ?? 0,
+    monthlySummaryData.value?.categories.filter(
+      (c: { amountSpent: number }) => c.amountSpent > 0,
+    ).length ?? 0,
 );
 const avgPerExpense = computed(() =>
   expenseCount.value > 0 ? totalSpent.value / expenseCount.value : 0,

@@ -5,6 +5,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
 export interface authPayload {
   email: string;
   password: string;
@@ -18,12 +19,16 @@ export interface updateUserPayload {
 }
 
 export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: User;
+}
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
   token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  newPassword: string;
 }
