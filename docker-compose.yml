@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./Backend/.env
+    environment:
+      FRONTEND_URL: http://localhost:5173
+      PORT: 3000
+      DATABASE_PATH: /data/database.sqlite.db
+    ports:
+      - "3000:3000"
+    volumes:
+      - backend-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - bun
+        - -e
+        - fetch('http://localhost:3000/').then(response => { if (!response.ok) process.exit(1) }).catch(() => process.exit(1))
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5173
+      NUXT_PUBLIC_API_BASE_URL: http://localhost:3000
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:5173"
+
+volumes:
+  backend-data:
