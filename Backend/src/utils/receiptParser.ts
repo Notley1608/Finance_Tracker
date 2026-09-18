@@ -61,9 +61,7 @@ const NEGATIVE = /^-\s*|^–\s*/;
 const DATE_LINE = /^(?<y>\d{4})[/.-](?<m>\d{1,2})[/.-](?<d>\d{1,2})$/;
 const DATE_TOKEN_MM_DD_YYYY = /^(?<m>\d{1,2})[/.-](?<d>\d{1,2})[/.-](?<y>\d{2}(?:\d{2})?)$/;
 const AMOUNT_ON_LINE = /(?<amount>-?\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)\s*$/;
-const AMOUNT_TOKEN = /^[$\s]*(?<amount>-?\d[\d,.]*)$/;
 const MERCHANT_MAX = 60;
-const TOKEN_MERCHANT_DATE = /^\d{1,4}([/.-])\d{1,2}\1\d{1,2}$/;
 
 function pad2(value: number): string {
   return String(value).padStart(2, "0");
@@ -125,17 +123,6 @@ function parseDateToken(token: string): string | null {
   return null;
 }
 
-function parseTokenDate(dateCandidate: string | null, lines: string[]): string | null {
-  if (dateCandidate) return dateCandidate;
-  for (const line of lines) {
-    for (const token of line.trim().split(/\s+/)) {
-      const parsed = parseDateToken(token);
-      if (parsed) return parsed;
-    }
-  }
-  return null;
-}
-
 function findMerchant(lines: string[]): string | null {
   for (const line of lines) {
     const trimmed = line.trim();
@@ -185,7 +172,7 @@ function suggestCategory(description: string, categoryNames: string[]): string |
   return null;
 }
 
-function cleanDescription(line: string, amount: number): string {
+function cleanDescription(line: string): string {
   return line
     .replace(CURRENCY_PREFIX, "")
     .replace(CURRENCY_SYMBOL, "")
@@ -207,7 +194,7 @@ export function parseReceipt(text: string, options: ReceiptParserOptions = {}): 
     if (!amountMatch?.groups?.amount) continue;
     const rawAmount = parseNumberToken(amountMatch.groups.amount);
     if (rawAmount === null) continue;
-    const description = cleanDescription(line, rawAmount);
+    const description = cleanDescription(line);
     if (!description) continue
     const type: ExpenseType = INCOME_KEYWORDS.some((re) => re.test(description)) ? "income" : "expense";
     parsedLines.push({
