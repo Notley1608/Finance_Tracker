@@ -1,75 +1,40 @@
-# Nuxt Minimal Starter
+# Finance Tracker — Frontend
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Nuxt 4 / Vue 3 single-page app UI for the Finance Tracker REST API (see the repository root `README.md`).
 
-## Setup
+## Stack
 
-Make sure to install dependencies:
+- Nuxt 4 + Vue 3, client-side rendering (SPA-style)
+- Nuxt UI v4 + Tailwind CSS v4 (theming via CSS variables in `app/assets/css/main.css`)
+- Pinia stores (user/expense/category) persisted to `localStorage` via `pinia-plugin-persistedstate`
+- `nuxt-charts` for dashboard charts (rendered client-only)
 
-```bash
-# npm
-npm install
+## Package manager
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:5173`:
+This package is managed **exclusively with Bun**. There is no `pnpm-lock.yaml` or `package-lock.json` in this repo — `bun.lock` is the only lockfile. Run all commands with `bun`:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+bun install    # install dependencies
+bun run dev    # development server (http://localhost:5173)
+bun run build  # production build
 ```
 
-## Production
+Set `NUXT_PUBLIC_API_BASE_URL` to point at the backend if it is not running on `http://localhost:3000`.
 
-Build the application for production:
+## Layout
 
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+app/
+├── api/            # $fetch client factory + per-domain API modules
+├── assets/css/     # Tailwind + Nuxt UI theme entry point
+├── components/     # dashboard / expense / category / layout / modals
+├── composables/    # table filter/sort/pagination state
+├── consts/         # month names, colour palette
+├── layouts/        # default (app shell), auth (login/register/etc.)
+├── middleware/     # auth route guard
+├── pages/          # dashboard, expenses, categories, budgets, login/register
+├── plugins/        # pinia-persistedstate
+├── stores/         # Pinia stores
+├── types/          # TypeScript mirrors of API shapes (keep in sync with backend)
+└── utils/          # formatting helpers
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

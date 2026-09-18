@@ -65,7 +65,7 @@ Relationships: `users 1—N categories`, `users 1—N expenses`, `categories 1�
 - [Node.js](https://nodejs.org) 26.x (frontend `engines` requirement) — used only to satisfy Nuxt tooling
 - [SQLite](https://sqlite.org) (bundled with `bun:sqlite`; a `sqlite3` CLI is convenient for inspecting the DB)
 
-> The backend is Bun-native and **must** be run with Bun. The frontend is pnpm/npm can be installed/run with Bun — but pick **one** package manager and stick with it to avoid lockfile drift.
+> Both packages use **Bun** as the package manager (and the backend is Bun-native). The frontend is installed exclusively with `bun install`; there is no `pnpm-lock.yaml`/`npm` lockfile in the repo.
 
 ### 1. Backend
 
@@ -96,14 +96,14 @@ bun run seed
 
 ```bash
 cd Frontend
-pnpm install
-pnpm run dev        # http://localhost:5173 (default)
+bun install
+bun run dev        # http://localhost:5173 (default)
 ```
 
 The frontend targets the backend via `runtimeConfig.public.apiBaseUrl` in `Frontend/nuxt.config.ts` (default `http://localhost:3000`). Override it with an env var if needed:
 
 ```bash
-NUXT_PUBLIC_API_BASE_URL=http://localhost:3000 pnpm run dev
+NUXT_PUBLIC_API_BASE_URL=http://localhost:3000 bun run dev
 ```
 
 > Seeded test login: `test@example.com` / `Test123!`
@@ -206,7 +206,7 @@ bun run test           # run bun:test suite
 ### Frontend (`Frontend/`)
 
 ```bash
-bun install            # install dependencies (or pnpm install)
+bun install            # install dependencies
 bun run dev            # dev server
 bun run build          # production build
 bun run generate       # prerender static site
@@ -218,9 +218,9 @@ bun run preview        # preview the production build
 ## Notes & known caveats
 
 - **Naming:** the category colour field is spelled `colour` (British) across the schema, API and frontend types for consistency.
-- **Package manager:** the frontend historically has both `bun.lock` and `pnpm-lock.yaml`. Pick one manager and remove the other to avoid lockfile drift.
+- **Package manager:** Bun is the single package manager for both packages (`bun install` / `bun run <script>`). `bun.lock` is the only lockfile in each package.
 - **Logout** is stateless (JWT is not revoked) — a cleared/bearer token simply expires.
-- **Charts** (`nuxt-charts`) render client-only; a `vue-chrts` Vite `optimizeDeps` WARN is expected under pnpm and is benign (the runtime dependency `@unovis/ts` is already installed).
+- **Charts** (`nuxt-charts`) render client-only. The runtime dependency `@unovis/ts` is bundled via Bun.
 - The frontend `Category`/other types are hand-maintained mirrors of backend shapes — keep them in sync when changing the API.
 
 ```
