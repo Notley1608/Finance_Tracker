@@ -1,5 +1,5 @@
 import { createApiClient } from "../client";
-import type { ParsedReceiptResult, ParsedReceiptLine } from "~/types/receipts";
+import type { ParsedReceiptResult } from "~/types/receipts";
 
 export interface ReceiptUploadRequestOptions {
   onProgress?: (percent: number) => void;
