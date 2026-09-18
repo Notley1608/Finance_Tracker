@@ -2,28 +2,33 @@ import { Elysia, t } from "elysia";
 import { databasePlugin } from "../plugins/database";
 import { expenseController } from "../controllers/expense.controller";
 import { HttpError } from "../utils";
-import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
+import { jwtAccess, authDerive, authResolve } from "../middleware/auth";
+
+const recurrenceEnum = t.Union([
+  t.Literal("none"),
+  t.Literal("weekly"),
+  t.Literal("monthly"),
+  t.Literal("yearly"),
+]);
+const typeEnum = t.Union([t.Literal("expense"), t.Literal("income")]);
 
 export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .use(databasePlugin)
-  .use(jwtMiddleware)
+  .use(jwtAccess)
   .derive(authDerive)
   .resolve(authResolve)
   .post(
     "/",
     async ({ db, body, userId, set }) => {
-      const { categoryId, amount, description, date } = body as {
-        categoryId: string;
-        amount: number;
-        description: string;
-        date: string;
-      };
+      const { categoryId, amount, description, date, type, recurrence } = body;
 
       const newExpense = await expenseController.createExpense(db, userId, {
         categoryId,
         amount,
         description,
         date,
+        type,
+        recurrence,
       });
       if (!newExpense) {
         throw new HttpError(500, "Error creating expense");
@@ -33,28 +38,77 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
     },
     {
       body: t.Object({
-        categoryId: t.String({ format: "uuid" }),
+        categoryId: t.Optional(t.Union([t.String({ format: "uuid" }), t.Null()])),
         amount: t.Number({ min: 0.01 }),
         description: t.String(),
         date: t.String({ format: "date" }),
+        type: t.Optional(typeEnum),
+        recurrence: t.Optional(recurrenceEnum),
       }),
     },
   )
 
-  .get("/", async ({ db, userId }) => {
-    return expenseController.getExpensesPerUser(db, userId);
+  .get("/", async ({ db, query, userId }) => {
+    const {
+      page = 1,
+      pageSize = 20,
+      search,
+      categoryId,
+      dateFrom,
+      dateTo,
+      type,
+      sortBy = "date",
+      sortOrder = "desc",
+    } = query;
+
+    return expenseController.getExpensesPerUser(db, userId, {
+      page,
+      pageSize,
+      search,
+      categoryId,
+      dateFrom,
+      dateTo,
+      type,
+      sortBy,
+      sortOrder,
+    });
+  }, {
+    query: t.Object({
+      page: t.Optional(t.Number({ minimum: 1 })),
+      pageSize: t.Optional(t.Number({ minimum: 1, maximum: 100 })),
+      search: t.Optional(t.String()),
+      categoryId: t.Optional(t.String({ format: "uuid" })),
+      dateFrom: t.Optional(t.String({ format: "date" })),
+      dateTo: t.Optional(t.String({ format: "date" })),
+      type: t.Optional(typeEnum),
+      sortBy: t.Optional(
+        t.Union([
+          t.Literal("date"),
+          t.Literal("amount"),
+          t.Literal("description"),
+        ]),
+      ),
+      sortOrder: t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")])),
+    }),
   })
 
   .get(
     "/monthly-sheet",
     async ({ db, query, userId }) => {
-      const { year, month } = query as { year: number; month: number };
-      return expenseController.findSheetByMonth(db, year, month, userId);
+      const { year, month, includeRecurring } = query;
+      return expenseController.findSheetByMonth(
+        db,
+        year,
+        month,
+        userId,
+        includeRecurring,
+      );
     },
     {
       query: t.Object({
         year: t.Number(),
         month: t.Number({ minimum: 1, maximum: 12 }),
+        includeRecurring: t.Optional(t.Boolean({ default: false })),
       }),
     },
   )
@@ -62,13 +116,20 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .get(
     "/monthly-summary",
     async ({ db, query, userId }) => {
-      const { year, month } = query as { year: number; month: number };
-      return expenseController.getMonthlySummary(db, year, month, userId);
+      const { year, month, includeRecurring } = query;
+      return expenseController.getMonthlySummary(
+        db,
+        year,
+        month,
+        userId,
+        includeRecurring,
+      );
     },
     {
       query: t.Object({
         year: t.Number(),
         month: t.Number({ minimum: 1, maximum: 12 }),
+        includeRecurring: t.Optional(t.Boolean({ default: false })),
       }),
     },
   )
@@ -76,11 +137,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .get(
     "/export",
     async ({ db, query, userId, set }) => {
-      const { year, month, format } = query as {
-        year: number;
-        month: number;
-        format: string;
-      };
+      const { year, month, format, includeRecurring } = query;
 
       const result = await expenseController.exportData(
         db,
@@ -88,6 +145,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
         month,
         format,
         userId,
+        includeRecurring,
       );
       if (!result) {
         throw new HttpError(404, "No data returned");
@@ -104,6 +162,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
         year: t.Number(),
         month: t.Number({ minimum: 1, maximum: 12 }),
         format: t.String(),
+        includeRecurring: t.Optional(t.Boolean({ default: false })),
       }),
     },
   )
@@ -115,7 +174,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .get(
     "/:expenseId",
     async ({ db, params, userId }) => {
-      const { expenseId } = params as { expenseId: string };
+      const { expenseId } = params;
       return expenseController.getSingleExpense(db, expenseId, userId);
     },
     {
@@ -128,19 +187,16 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .patch(
     "/:expenseId",
     async ({ db, params, body, userId }) => {
-      const { expenseId } = params as { expenseId: string };
-      const { categoryId, amount, description, date } = body as {
-        categoryId: string;
-        amount: number;
-        description: string;
-        date: string;
-      };
+      const { expenseId } = params;
+      const { categoryId, amount, description, date, type, recurrence } = body;
 
       return expenseController.updateExpense(db, expenseId, userId, {
         categoryId,
         amount,
         description,
         date,
+        type,
+        recurrence,
       });
     },
     {
@@ -148,10 +204,14 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
         expenseId: t.String({ format: "uuid" }),
       }),
       body: t.Object({
-        categoryId: t.String({ format: "uuid" }),
+        categoryId: t.Optional(
+          t.Union([t.String({ format: "uuid" }), t.Null()]),
+        ),
         amount: t.Number({ minimum: 0.01 }),
         description: t.String(),
         date: t.String({ format: "date" }),
+        type: t.Optional(typeEnum),
+        recurrence: t.Optional(recurrenceEnum),
       }),
     },
   )
@@ -159,7 +219,7 @@ export const expenseRoutes = new Elysia({ prefix: "/expenses" })
   .delete(
     "/:expenseId",
     async ({ db, params, userId, set }) => {
-      const { expenseId } = params as { expenseId: string };
+      const { expenseId } = params;
       await expenseController.deleteExpense(db, expenseId, userId);
 
       set.status = 204;

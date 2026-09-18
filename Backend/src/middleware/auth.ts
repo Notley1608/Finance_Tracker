@@ -6,13 +6,26 @@ if (!jwtSecret) {
   throw new Error("JWT_SECRET environment variable is required");
 }
 
-export const jwtMiddleware = jwtPlugin({
-  name: "jwt",
+export const ACCESS_TOKEN_TTL = "15m";
+
+export const jwtAccess = jwtPlugin({
+  name: "jwtAccess",
   secret: jwtSecret,
-  exp: "7d",
+  exp: ACCESS_TOKEN_TTL,
 });
 
-export const authDerive = ({ headers }: { headers: Record<string, string | undefined> }) => {
+export function signAccessToken(
+  jwt: any,
+  userId: string,
+): Promise<string | null> {
+  return jwt.sign({ sub: userId, type: "access" });
+}
+
+export const authDerive = ({
+  headers,
+}: {
+  headers: Record<string, string | undefined>;
+}) => {
   const auth = headers["authorization"];
   if (!auth?.startsWith("Bearer ")) {
     throw new HttpError(401, "Unauthorized");
@@ -22,12 +35,12 @@ export const authDerive = ({ headers }: { headers: Record<string, string | undef
 
 export const authResolve = async ({
   bearer,
-  jwt,
+  jwtAccess: jwt,
 }: {
   bearer: string;
-  jwt: any;
+  jwtAccess: any;
 }) => {
-  let payload;
+  let payload: any;
   try {
     payload = await jwt.verify(bearer);
   } catch {

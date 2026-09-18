@@ -1,19 +1,26 @@
+export type ExpenseType = "expense" | "income";
+export type RecurrencePattern = "none" | "weekly" | "monthly" | "yearly";
+
 export interface ExpenseProperties {
   expenseId: string;
   userId: string;
-  categoryId: string;
+  categoryId: string | null;
   amount: number;
   description: string;
   date: Date;
+  type: ExpenseType;
+  recurrence: RecurrencePattern;
 }
 
 export class ExpenseEntity {
   private expenseId: string;
   private userId: string;
-  private categoryId: string;
+  private categoryId: string | null;
   private amount: number;
   private description: string;
   private date: Date;
+  private type: ExpenseType;
+  private recurrence: RecurrencePattern;
 
   constructor(properties: ExpenseProperties) {
     this.expenseId = properties.expenseId;
@@ -22,6 +29,8 @@ export class ExpenseEntity {
     this.amount = properties.amount;
     this.description = properties.description;
     this.date = properties.date;
+    this.type = properties.type;
+    this.recurrence = properties.recurrence;
   }
 
   public get id(): string {
@@ -32,7 +41,7 @@ export class ExpenseEntity {
     return this.userId;
   }
 
-  public get categoryIdValue(): string {
+  public get categoryIdValue(): string | null {
     return this.categoryId;
   }
 
@@ -51,6 +60,14 @@ export class ExpenseEntity {
     return `${y}-${m}-${d}`;
   }
 
+  public get currentType(): ExpenseType {
+    return this.type;
+  }
+
+  public get currentRecurrence(): RecurrencePattern {
+    return this.recurrence;
+  }
+
   public getFormattedAmount(): string {
     const dollars: number = this.amount;
     return dollars.toFixed(2);
@@ -64,6 +81,8 @@ export class ExpenseEntity {
       amount: this.getFormattedAmount(),
       description: this.description,
       date: this.currentDate,
+      type: this.type,
+      recurrence: this.recurrence,
     };
   }
 }

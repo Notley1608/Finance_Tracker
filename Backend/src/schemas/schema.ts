@@ -27,12 +27,59 @@ export const expenseSchema = sqliteTable("expenses", {
   user_id: text("user_id")
     .notNull()
     .references(() => userSchema.id, { onDelete: "cascade" }),
-  category_id: text("category_id")
-    .notNull()
-    .references(() => categorySchema.id, { onDelete: "cascade" }),
+  category_id: text("category_id").references(() => categorySchema.id, {
+    onDelete: "cascade",
+  }),
   amount: real("amount").notNull(),
   description: text("description"),
   date: text("date").notNull(),
+  type: text("type", { enum: ["expense", "income"] }).notNull().default("expense"),
+  recurrence: text("recurrence", {
+    enum: ["none", "weekly", "monthly", "yearly"],
+  })
+    .notNull()
+    .default("none"),
 });
 
 export type ExpenseSchema = typeof expenseSchema.$inferSelect;
+
+export const refreshTokenSchema = sqliteTable("refresh_tokens", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => userSchema.id, { onDelete: "cascade" }),
+  token_hash: text("token_hash").notNull(),
+  expires_at: text("expires_at").notNull(),
+  createdAt: text("created_at").notNull(),
+  revokedAt: text("revoked_at"),
+});
+
+export type RefreshTokenSchema = typeof refreshTokenSchema.$inferSelect;
+
+export const passwordResetSchema = sqliteTable("password_resets", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => userSchema.id, { onDelete: "cascade" }),
+  token_hash: text("token_hash").notNull(),
+  expires_at: text("expires_at").notNull(),
+  used_at: text("used_at"),
+  createdAt: text("created_at").notNull(),
+});
+
+export type PasswordResetSchema = typeof passwordResetSchema.$inferSelect;
+
+export const budgetSchema = sqliteTable("budgets", {
+  id: text("id").primaryKey(),
+  user_id: text("user_id")
+    .notNull()
+    .references(() => userSchema.id, { onDelete: "cascade" }),
+  category_id: text("category_id")
+    .notNull()
+    .references(() => categorySchema.id, { onDelete: "cascade" }),
+  limit: real("limit").notNull(),
+  createdAt: text("created_at").notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export type BudgetSchema = typeof budgetSchema.$inferSelect;

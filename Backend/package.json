@@ -9,6 +9,7 @@
     "dev": "bun --hot run ./src/index.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "migrate": "bun run ./src/migrate.ts",
     "test": "bun test",
     "seed": "bun run ./src/seed.ts"
   },

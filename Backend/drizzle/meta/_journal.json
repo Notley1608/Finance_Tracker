@@ -29,6 +29,13 @@
       "when": 1787895893436,
       "tag": "0003_stormy_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789695068009,
+      "tag": "0004_rare_sersi",
+      "breakpoints": true
     }
   ]
 }

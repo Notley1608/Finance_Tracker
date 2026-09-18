@@ -122,6 +122,23 @@ export class UserModel {
     return UserModel.fromDatabase(updatedRecord);
   }
 
+  public async updatePassword(
+    userId: string,
+    newPassword: string,
+  ): Promise<UserEntity | null> {
+    const [updatedRecord] = await this.database
+      .update(userSchema)
+      .set({
+        passwordHash: await Bun.password.hash(newPassword),
+        updatedAt: new Date().toISOString(),
+      })
+      .where(eq(userSchema.id, userId))
+      .returning();
+
+    if (!updatedRecord) return null;
+    return UserModel.fromDatabase(updatedRecord);
+  }
+
   public async delete(
     userId: string,
     userEmail: string,

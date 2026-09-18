@@ -2,11 +2,11 @@ import { Elysia, t } from "elysia";
 import { databasePlugin } from "../plugins/database";
 import { categoryController } from "../controllers/category.controller";
 import { HttpError } from "../utils";
-import { jwtMiddleware, authDerive, authResolve } from "../middleware/auth";
+import { jwtAccess, authDerive, authResolve } from "../middleware/auth";
 
 export const categoryRoutes = new Elysia({ prefix: "/categories" })
   .use(databasePlugin)
-  .use(jwtMiddleware)
+  .use(jwtAccess)
   .derive(authDerive)
   .resolve(authResolve)
 

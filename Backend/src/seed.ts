@@ -2,6 +2,7 @@ import { db } from "./db";
 import { UserModel } from "./models/user.model";
 import { CategoryModel } from "./models/category.model";
 import { ExpenseModel } from "./models/expense.model";
+import { BudgetModel } from "./models/budget.model";
 
 /**
  * Generate `count` dates spread evenly across the last `months` months,
@@ -42,6 +43,7 @@ async function seed() {
   const userModel = new UserModel(db);
   const categoryModel = new CategoryModel(db);
   const expenseModel = new ExpenseModel(db);
+  const budgetModel = new BudgetModel(db);
 
   try {
     console.log("Seeding database...");
@@ -264,8 +266,11 @@ async function seed() {
         continue;
       }
 
-      const existingExpenses = await expenseModel.findAllByUserId(user.id);
-      const alreadyExists = existingExpenses?.some(
+      const existingExpenses = await expenseModel.findAllByUserId(user.id, {
+        page: 1,
+        pageSize: 100,
+      });
+      const alreadyExists = existingExpenses.items?.some(
         (item) =>
           item.currentDescription === expense.description &&
           item.rawAmount === expense.amount,
@@ -279,9 +284,12 @@ async function seed() {
       const createdExpense = await expenseModel.create(
         expense.amount,
         user.id,
-        categoryId,
         expense.description,
         (spreadDates[seedIdx] ?? new Date()).toISOString(),
+        categoryId,
+        (expense as { type?: "expense" | "income" }).type ?? "expense",
+        (expense as { recurrence?: "none" | "weekly" | "monthly" | "yearly" })
+          .recurrence ?? "none",
       );
       seedIdx++;
 
@@ -289,6 +297,87 @@ async function seed() {
         console.log(`Inserted expense: ${expense.description}`);
       } else {
         console.error(`Failed to insert expense: ${expense.description}`);
+      }
+    }
+
+    // 4. Seed income entries for test@example.com
+    const incomeToSeed = [
+      {
+        description: "Monthly salary",
+        amount: 4200,
+        recurrence: "none" as const,
+        type: "income" as const,
+      },
+      {
+        description: "Freelance invoice",
+        amount: 650,
+        recurrence: "none" as const,
+        type: "income" as const,
+      },
+      {
+        description: "Rental bond refund",
+        amount: 900,
+        recurrence: "none" as const,
+        type: "income" as const,
+      },
+    ];
+
+    const testUser = createdUsers.find(
+      (item) => item.email === "test@example.com",
+    );
+    if (testUser) {
+      for (const income of incomeToSeed) {
+        const date = (spreadDates[seedIdx - incomeToSeed.length] ?? new Date()).toISOString();
+        const createdIncome = await expenseModel.create(
+          income.amount,
+          testUser.id,
+          income.description,
+          date,
+          null,
+          income.type,
+          income.recurrence,
+        );
+        if (createdIncome) {
+          console.log(`Inserted income: ${income.description}`);
+        }
+      }
+
+      // 5. Seed a recurring expense template
+      const recurrent = await expenseModel.create(
+        199,
+        testUser.id,
+        "Gym membership",
+        new Date(Date.UTC(2025, 0, 5)).toISOString(),
+        createdCategories.get(`${testUser.id}:Utilities`)?.id ?? null,
+        "expense",
+        "monthly",
+      );
+      if (recurrent) {
+        console.log("Inserted recurring expense: Gym membership");
+      }
+
+      // 6. Seed budgets against Groceries and Utilities
+      const groceries = createdCategories.get(`${testUser.id}:Groceries`);
+      const utilities = createdCategories.get(`${testUser.id}:Utilities`);
+      if (groceries) {
+        const budget = await budgetModel.upsertByCategory(
+          testUser.id,
+          groceries.id,
+          800,
+        );
+        if (budget) {
+          console.log(`Inserted budget for '${groceries.name}': $800`);
+        }
+      }
+      if (utilities) {
+        const budget = await budgetModel.upsertByCategory(
+          testUser.id,
+          utilities.id,
+          500,
+        );
+        if (budget) {
+          console.log(`Inserted budget for '${utilities.name}': $500`);
+        }
       }
     }
 
